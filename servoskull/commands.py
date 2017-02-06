@@ -43,7 +43,7 @@ def cmd_gif(arguments=None) -> str:
 
 
 def cmd_date(arguments=None) -> str:
-    return "By the Emperor's grace it is {}".format(imperial_date)
+    return "By the Emperor's grace it is {}".format(ImperialDate())
 
 
 def cmd_identify(arguments=None) -> str:
