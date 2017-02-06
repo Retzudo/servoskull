@@ -1,7 +1,7 @@
 import discord
 import logging
 import os
-from commands import execute_command
+from servoskull.commands import execute_command
 
 
 client = discord.Client()
