@@ -5,7 +5,7 @@ import os
 
 client = discord.Client()
 TOKEN_ENVIRON_VARIABLE = 'SERVOSKULL_TOKEN'
-CMD_PREFIX = os.getenviron('SERVOSKULL_CMD_PREFIX', '!')
+CMD_PREFIX = os.getenv('SERVOSKULL_CMD_PREFIX', '!')
 
 
 def get_command(message_string):
@@ -36,10 +36,12 @@ class ServoSkullError(Exception):
 
 
 if __name__ == '__main__':
-    token = os.getenviron(TOKEN_ENVIRON_VARIABLE, None)
+    token = os.getenv(TOKEN_ENVIRON_VARIABLE, None)
     if not CMD_PREFIX:
+        client.close()
         raise ServoSkullError('Invalid command prefix')
     if not token:
+        client.close()
         raise ServoSkullError(
             'Discord API token not set with the {} environment variable'.format(TOKEN_ENVIRON_VARIABLE)
         )
