@@ -1,6 +1,7 @@
 import discord
 import logging
 import os
+from commands import execute_command
 
 
 client = discord.Client()
@@ -12,13 +13,6 @@ def get_command(message_string):
     return message_string[len(CMD_PREFIX):]
 
 
-async def execute_command(command, message):
-    msg = 'No such command "{}"'.format(command)
-
-    await client.send_message(message.channel, msg)
-    logging.warn(msg)
-
-
 @client.event
 async def on_ready():
     logging.info('Logged in as {} ({})'.format(client.user.name, client.user.id))
@@ -28,7 +22,7 @@ async def on_ready():
 async def on_message(message):
     if message.content.startswith(CMD_PREFIX):
         command = get_command(message.content)
-        await execute_command(command, message)
+        await execute_command(command, message, client)
 
 
 class ServoSkullError(Exception):
