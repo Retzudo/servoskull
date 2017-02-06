@@ -13,6 +13,10 @@ def get_command(message_string):
     return message_string.split()[0][len(CMD_PREFIX):]
 
 
+def get_arguments(message_string):
+    return message_string.split()[1:]
+
+
 @client.event
 async def on_ready():
     logging.info('Logged in as {} ({})'.format(client.user.name, client.user.id))
@@ -29,7 +33,7 @@ async def execute_command(command, message, client):
     if command not in commands:
         response = 'No such command "{}"'.format(command)
     else:
-        response = commands[command]['fn']()
+        response = commands[command]['fn'](arguments=get_arguments(message.content))
 
     await client.send_message(message.channel, response)
     logging.info(response)
