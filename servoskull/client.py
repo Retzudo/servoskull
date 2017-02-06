@@ -1,7 +1,7 @@
 import discord
 import logging
 import os
-from servoskull.commands import execute_command
+from servoskull.commands import commands
 
 
 client = discord.Client()
@@ -10,7 +10,7 @@ CMD_PREFIX = os.getenv('SERVOSKULL_CMD_PREFIX', '!')
 
 
 def get_command(message_string):
-    return message_string[len(CMD_PREFIX):]
+    return message_string.split()[0][len(CMD_PREFIX):]
 
 
 @client.event
@@ -23,6 +23,16 @@ async def on_message(message):
     if message.content.startswith(CMD_PREFIX):
         command = get_command(message.content)
         await execute_command(command, message, client)
+
+
+async def execute_command(command, message, client):
+    if command not in commands:
+        response = 'No such command "{}"'.format(command)
+    else:
+        response = commands[command]['fn']()
+
+    await client.send_message(message.channel, response)
+    logging.info(response)
 
 
 class ServoSkullError(Exception):
