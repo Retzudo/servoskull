@@ -2,4 +2,4 @@
 
 # Servo-skull
 
-A custom Discord bot.
+*A custom Discord bot.*
