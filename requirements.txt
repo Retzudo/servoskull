@@ -4,11 +4,14 @@ async-timeout==1.1.0
 chardet==2.3.0
 discord.py==0.16.5
 greenlet==0.4.12
+-e git://github.com/Retzudo/imperial-date-python.git@8039f14531e18327c2c700803d3de31d3c7b5563#egg=imperialdate
 msgpack-python==0.4.8
 multidict==2.1.4
 packaging==16.8
+pkg-resources==0.0.0
+py==1.4.32
 pyparsing==2.1.10
+pytest==3.0.6
 requests==2.13.0
 six==1.10.0
 websockets==3.2
--e git+git://github.com/Retzudo/imperial-date-python.git#egg=imperialdate
