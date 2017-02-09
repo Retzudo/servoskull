@@ -1,20 +1,56 @@
-import discord
 import logging
 import os
-from servoskull.commands import commands
+from difflib import get_close_matches
 
+import discord
+
+from servoskull.commands import commands
+from servoskull.settings import CMD_PREFIX, DISCORD_TOKEN
 
 client = discord.Client()
-TOKEN_ENVIRON_VARIABLE = 'SERVOSKULL_TOKEN'
-CMD_PREFIX = os.getenv('SERVOSKULL_CMD_PREFIX', '!')
 
 
-def get_command(message_string):
-    return message_string.split()[0][len(CMD_PREFIX):]
+class ServoSkullError(Exception):
+    pass
 
 
-def get_arguments(message_string):
-    return message_string.split()[1:]
+def get_command_by_prefix(message_string):
+    """Extract the command an its arguments from a string
+    starting with a command prefix.
+
+    The command is the word prepended by the configured command prefix.
+    The arguments are a list of words followed by the command.
+    """
+    command = message_string.split()[0][len(CMD_PREFIX):]
+    arguments = message_string.split()[1:]
+
+    return command, arguments
+
+
+def get_command_by_mention(message_string):
+    """Extract the command and its arguments from a string
+    where the bot was mentioned in.
+
+    The command is the first word in a list of words in the message without
+    word the begins with `@` (mentions).
+    The arguments are a list of words followed by the command.
+    """
+    words = [word for word in message_string.split() if not word.startswith('<@!')]
+    command = words[0]
+    arguments = words[1:]
+
+    return command, arguments
+
+
+def get_closest_command(command):
+    """Given a string, return the command that's most similar to it."""
+    available_commands = [key.lower() for key, _ in commands.items()]
+
+    closest_commands = get_close_matches(command.lower(), available_commands, 1)
+    if len(closest_commands) >= 1:
+        return closest_commands[0]
+    else:
+        return None
 
 
 @client.event
@@ -24,34 +60,36 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+    """Listen for messages."""
     if message.content.startswith(CMD_PREFIX):
-        command = get_command(message.content)
-        await execute_command(command, message, client)
+        command, arguments = get_command_by_prefix(message.content)
+        await execute_command(command, arguments, client, message)
+    elif client.user.mentioned_in(message):
+        command, arguments = get_command_by_mention(message.content)
+        await execute_command(command, arguments, client, message)
 
 
-async def execute_command(command, message, client):
+async def execute_command(command, arguments, discord_client, message=None):
     if command not in commands:
-        response = 'No such command "{}"'.format(command)
+        response = 'No such command "{}".'.format(command, get_closest_command(command))
+        closest_command = get_closest_command(command)
+        if closest_command:
+            response += ' Did you mean {}?'.format(closest_command)
     else:
-        response = commands[command]['fn'](arguments=get_arguments(message.content))
+        response = commands[command]['fn'](arguments=arguments)
 
-    await client.send_message(message.channel, response)
+    await discord_client.send_message(message.channel, response)
     logging.info(response)
 
 
-class ServoSkullError(Exception):
-    pass
-
-
 if __name__ == '__main__':
-    token = os.getenv(TOKEN_ENVIRON_VARIABLE, None)
     if not CMD_PREFIX:
         client.close()
         raise ServoSkullError('Invalid command prefix')
-    if not token:
+    if not DISCORD_TOKEN:
         client.close()
         raise ServoSkullError(
             'Discord API token not set with the {} environment variable'.format(TOKEN_ENVIRON_VARIABLE)
         )
 
-    client.run(token)
+    client.run(DISCORD_TOKEN)
