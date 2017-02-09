@@ -29,10 +29,9 @@ def cmd_gif(arguments=None) -> str:
     if not arguments:
         return 'Find a gif at https://gifs.retzudo.com'
 
-    data = requests.get('https://gifs.retzudo.com/gifs.json')
-    gifs = json.loads(data.content.decode('utf-8'))['gifs']
+    gifs = requests.get('https://gifs.retzudo.com/gifs.json').json()
 
-    for gif in gifs:
+    for gif in gifs['gifs']:
         haystack = gif['title'].lower()
         for c in ['!', '?', '.', ',']:
             haystack = haystack.replace(c, '')
@@ -62,6 +61,17 @@ def cmd_identify(arguments=None) -> str:
     to warrant continuation beyond death."""
 
 
+def cmd_next_holiday(arguments=None) -> str:
+    """Response with when the next holiday is according to holidays.retzudo.com."""
+    holiday = requests.get('https://holidays.retzudo.com/next.json').json()
+
+    return 'The next holiday is "{}" {} ({})'.format(
+        holiday['name'],
+        holiday['humanized']['en_gb'],
+        holiday['date']
+    )
+
+
 commands = {
     'help': {
         'fn': cmd_help,
@@ -82,5 +92,9 @@ commands = {
     'identify': {
         'fn': cmd_identify,
         'description': 'Identifies the servo-skull'
+    },
+    'holiday': {
+        'fn': cmd_next_holiday,
+        'description': 'Respond with with when the next holiday is'
     }
 }

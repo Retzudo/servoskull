@@ -25,7 +25,7 @@ def test_cmd_date():
     import re
     response = commands.cmd_date()
 
-    assert re.match("^By the Emperor's grace it is 0 \d{3} \d{3}\.M\d", response)
+    assert re.match("^By the Emperor's grace it is 0 \d{3} \d{3}\.M\d$", response)
 
 
 def test_cmd_identify():
@@ -33,3 +33,10 @@ def test_cmd_identify():
 
     assert len(response) > 100
     assert response.startswith('A Servo-skull is a drone-like')
+
+
+def test_cmd_next_holiday():
+    import re
+    response = commands.cmd_next_holiday()
+
+    assert re.match('^The next holiday is "\w+" .* \(\d{4}-\d{2}-\d{2}\)$', response)
