@@ -1,4 +1,3 @@
-import json
 import logging
 import random
 import requests
@@ -13,7 +12,16 @@ def cmd_help(arguments=None) -> str:
     """Respond with a help message containing all available commands."""
     response = 'Available commands:\n'
     for key, value in commands.items():
-        response += '  **{}{}** - {}\n'.format(CMD_PREFIX, key, value['description'])
+        arguments = ""
+        if 'arguments' in value:
+            for argument in value['arguments']:
+                arguments += '**<{}>** '.format(argument)
+
+        response += '  **{}{}** {}- {}\n'.format(CMD_PREFIX, key, arguments, value['description'])
+
+    response += 'Either prepend your command with `{}` or mention the bot using `@`.'.format(
+        CMD_PREFIX
+    )
 
     return response
 
@@ -62,7 +70,7 @@ def cmd_identify(arguments=None) -> str:
 
 
 def cmd_next_holiday(arguments=None) -> str:
-    """Response with when the next holiday is according to holidays.retzudo.com."""
+    """Respond with when the next holiday is according to holidays.retzudo.com."""
     holiday = requests.get('https://holidays.retzudo.com/next.json').json()
 
     return 'The next holiday is "{}" {} ({})'.format(
@@ -70,6 +78,20 @@ def cmd_next_holiday(arguments=None) -> str:
         holiday['humanized']['en_gb'],
         holiday['date']
     )
+
+
+def cmd_roll(arguments=None) -> str:
+    """Respond with a roll of a die."""
+    if not arguments:
+        return 'Please specify a valid integer >= 2'
+    try:
+        sides = int(arguments[0])
+        if sides < 2:
+            raise ValueError()
+    except ValueError:
+        return 'Please specify a valid integer >= 2'
+
+    return 'Rolled a {}-sided die: {}'.format(sides, random.randint(1, sides))
 
 
 commands = {
@@ -83,6 +105,7 @@ commands = {
     },
     'gif': {
         'fn': cmd_gif,
+        'arguments': ['name or tag'],
         'description': 'Respond with a gif from gifs.retzudo.com'
     },
     'date': {
@@ -96,5 +119,10 @@ commands = {
     'holiday': {
         'fn': cmd_next_holiday,
         'description': 'Respond with with when the next holiday is'
+    },
+    'roll': {
+        'fn': cmd_roll,
+        'arguments': ['n'],
+        'description': 'Roll an n-sided die'
     }
 }
