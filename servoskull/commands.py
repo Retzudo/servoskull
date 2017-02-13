@@ -82,9 +82,9 @@ def cmd_next_holiday(arguments: list=None) -> str:
 
 def cmd_roll(arguments: list=None) -> str:
     """Respond with a roll of a die."""
-    if not arguments:
-        return 'Please specify a valid integer >= 2'
     try:
+        if not arguments:
+            raise ValueError()
         sides = int(arguments[0])
         if sides < 2:
             raise ValueError()
