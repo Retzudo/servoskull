@@ -1,14 +1,16 @@
 import logging
 import random
-import requests
 
+import requests
 from imperialdate import ImperialDate
+
+from servoskull.client import client
 from servoskull.settings import CMD_PREFIX
 
 logging.basicConfig(level=logging.INFO)
 
 
-def cmd_help(arguments: list=None) -> str:
+async def cmd_help(arguments: list=None, message=None) -> str:
     """Respond with a help message containing all available commands."""
     response = 'Available commands:\n'
     for key, value in commands.items():
@@ -26,12 +28,12 @@ def cmd_help(arguments: list=None) -> str:
     return response
 
 
-def cmd_yesno(arguments: list=None) -> str:
+async def cmd_yesno(arguments: list=None, message=None) -> str:
     """Respond with 'yes' or 'no', chosen randomly."""
     return random.choice(['yes', 'no'])
 
 
-def cmd_gif(arguments: list=None) -> str:
+async def cmd_gif(arguments: list=None, message=None) -> str:
     """Respond with a gif that matches a title or a tag of a gif
     at https://gifs.retzudo.com."""
     if not arguments:
@@ -53,12 +55,12 @@ def cmd_gif(arguments: list=None) -> str:
     return 'No gif found'
 
 
-def cmd_date(arguments: list=None) -> str:
+async def cmd_date(arguments: list=None, message=None) -> str:
     """Respond with the current Imperial Date."""
     return "By the Emperor's grace it is {}".format(ImperialDate())
 
 
-def cmd_identify(arguments: list=None) -> str:
+async def cmd_identify(arguments: list=None, message=None) -> str:
     """Respond with a little RP text."""
     return """A Servo-skull is a drone-like robotic device that appears to be a human skull outfitted with electronic
     or cybernetic components that utilise embedded anti-gravity field generators to allow them to hover and drift
@@ -69,7 +71,7 @@ def cmd_identify(arguments: list=None) -> str:
     to warrant continuation beyond death."""
 
 
-def cmd_next_holiday(arguments: list=None) -> str:
+async def cmd_next_holiday(arguments: list=None, message=None) -> str:
     """Respond with when the next holiday is according to holidays.retzudo.com."""
     holiday = requests.get('https://holidays.retzudo.com/next.json').json()
 
@@ -80,7 +82,7 @@ def cmd_next_holiday(arguments: list=None) -> str:
     )
 
 
-def cmd_roll(arguments: list=None) -> str:
+async def cmd_roll(arguments: list=None, message=None) -> str:
     """Respond with a roll of a die."""
     try:
         if not arguments:
@@ -92,6 +94,41 @@ def cmd_roll(arguments: list=None) -> str:
         return 'Please specify a valid integer >= 2'
 
     return 'Rolled a {}-sided die: {}'.format(sides, random.randint(1, sides))
+
+
+async def cmd_summon(arguments: list=None, message=None) -> str:
+    """Have the bot connect to the voice channel of the message's user."""
+    voice_channel = message.author.voice.voice_channel
+    if not voice_channel:
+        return 'You are not connected to any voice channel'
+
+    voice_client = client.voice_client_in(message.server)
+    if not voice_client:
+        await client.join_voice_channel(voice_channel)
+    else:
+        await voice_client.move_to(voice_channel)
+
+    return 'Connected to "{}"'.format(voice_channel.name)
+
+
+async def cmd_disconnect(arguments: list=None, message=None) -> str:
+    """Disconnect from the current voice channel."""
+    voice_client = client.voice_client_in(message.server)
+    if not voice_client:
+        return 'I am not connected to any voice channel'
+    else:
+        await voice_client.disconnect()
+
+
+async def cmd_horn(arguments: list=None, message=None) -> str:
+    """Play a horn sound."""
+    horn_url = 'https://www.youtube.com/watch?v=1ytCEuuW2_A'
+    voice_client = client.voice_client_in(message.server)
+    if not voice_client:
+        return 'I am not connected to any voice channel'
+
+    player = voice_client.create_ytdl_player(horn_url)
+    player.start()
 
 
 commands = {
@@ -124,5 +161,13 @@ commands = {
         'fn': cmd_roll,
         'arguments': ['n'],
         'description': 'Roll an n-sided die'
+    },
+    'summon': {
+        'fn': cmd_summon,
+        'description': "Summons the bot to the user's voice channel"
+    },
+    'disconnect': {
+        'fn': cmd_disconnect,
+        'description': 'Disconnects the bot from the current voice channel'
     }
 }

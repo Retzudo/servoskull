@@ -1,5 +1,4 @@
 import logging
-import os
 from difflib import get_close_matches
 
 import discord
@@ -76,10 +75,11 @@ async def execute_command(command, arguments, discord_client, message=None):
         if closest_command:
             response += ' Did you mean {}?'.format(closest_command)
     else:
-        response = commands[command]['fn'](arguments=arguments)
+        response = await commands[command]['fn'](arguments=arguments, message=message)
 
-    await discord_client.send_message(message.channel, response)
-    logging.info(response)
+    if response:
+        await discord_client.send_message(message.channel, response)
+        logging.info(response)
 
 
 if __name__ == '__main__':
