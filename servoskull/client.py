@@ -4,7 +4,7 @@ from difflib import get_close_matches
 import discord
 
 from servoskull.commands import commands
-from servoskull.settings import CMD_PREFIX, DISCORD_TOKEN
+from servoskull.settings import CMD_PREFIX, DISCORD_TOKEN, ENV_PREFIX
 
 client = discord.Client()
 
@@ -89,7 +89,7 @@ if __name__ == '__main__':
     if not DISCORD_TOKEN:
         client.close()
         raise ServoSkullError(
-            'Discord API token not set with the {} environment variable'.format(TOKEN_ENVIRON_VARIABLE)
+            'Discord API token not set with the {} environment variable'.format(ENV_PREFIX)
         )
 
     client.run(DISCORD_TOKEN)
