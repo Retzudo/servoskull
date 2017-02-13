@@ -8,7 +8,7 @@ from servoskull.settings import CMD_PREFIX
 logging.basicConfig(level=logging.INFO)
 
 
-def cmd_help(arguments=None) -> str:
+def cmd_help(arguments: list=None) -> str:
     """Respond with a help message containing all available commands."""
     response = 'Available commands:\n'
     for key, value in commands.items():
@@ -26,12 +26,12 @@ def cmd_help(arguments=None) -> str:
     return response
 
 
-def cmd_yesno(arguments=None) -> str:
+def cmd_yesno(arguments: list =None) -> str:
     """Respond with 'yes' or 'no', chosen randomly."""
     return random.choice(['yes', 'no'])
 
 
-def cmd_gif(arguments=None) -> str:
+def cmd_gif(arguments: list=None) -> str:
     """Respond with a gif that matches a title or a tag of a gif
     at https://gifs.retzudo.com."""
     if not arguments:
@@ -53,12 +53,12 @@ def cmd_gif(arguments=None) -> str:
     return 'No gif found'
 
 
-def cmd_date(arguments=None) -> str:
+def cmd_date(arguments: list=None) -> str:
     """Respond with the current Imperial Date."""
     return "By the Emperor's grace it is {}".format(ImperialDate())
 
 
-def cmd_identify(arguments=None) -> str:
+def cmd_identify(arguments: list=None) -> str:
     """Respond with a little RP text."""
     return """A Servo-skull is a drone-like robotic device that appears to be a human skull outfitted with electronic
     or cybernetic components that utilise embedded anti-gravity field generators to allow them to hover and drift
@@ -69,7 +69,7 @@ def cmd_identify(arguments=None) -> str:
     to warrant continuation beyond death."""
 
 
-def cmd_next_holiday(arguments=None) -> str:
+def cmd_next_holiday(arguments: list=None) -> str:
     """Respond with when the next holiday is according to holidays.retzudo.com."""
     holiday = requests.get('https://holidays.retzudo.com/next.json').json()
 
@@ -80,7 +80,7 @@ def cmd_next_holiday(arguments=None) -> str:
     )
 
 
-def cmd_roll(arguments=None) -> str:
+def cmd_roll(arguments: list=None) -> str:
     """Respond with a roll of a die."""
     if not arguments:
         return 'Please specify a valid integer >= 2'
