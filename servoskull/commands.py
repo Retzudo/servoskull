@@ -24,9 +24,7 @@ async def cmd_help(arguments: list=None, **kwargs) -> str:
 
         response += '\n  **{}{}** {}- {}'.format(CMD_PREFIX, key, arguments, value['description'])
 
-    response += '\nEither prepend your command with `{}` or mention the bot using `@`.'.format(
-        CMD_PREFIX
-    )
+    response += '\nEither prepend your command with `{}` or mention the bot using `@`.'.format(CMD_PREFIX)
 
     return response
 
@@ -199,6 +197,6 @@ commands = {
     'sound': {
         'fn': cmd_sound,
         'arguments': ['sound'],
-        'description': 'Play a sound (`sounds for a list`)'
+        'description': 'Play a sound (`sounds` for a list)'
     }
 }
