@@ -145,7 +145,7 @@ async def cmd_sound(arguments: list=None, **kwargs) -> str:
     sound = arguments[0]
     url = sounds.get(sound)
     if not url:
-        return 'No such sound.'
+        return 'No such sound "{}". Use `sounds` for a list of sounds'.format(sound)
 
     player = voice_client.create_ytdl_player(url)
     player.start()
