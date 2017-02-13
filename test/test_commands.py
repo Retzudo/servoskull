@@ -8,6 +8,7 @@ async def test_cmd_help():
     response = await commands.cmd_help()
 
     assert response.startswith('Available commands:')
+    assert len(response.split('\n')) == len(commands.commands.keys()) + 2
 
 
 @pytest.mark.asyncio
@@ -81,3 +82,11 @@ async def test_cmd_roll():
 
     response = await commands.cmd_roll(['100'])
     assert response.startswith('Rolled a 100-sided die:')
+
+
+@pytest.mark.asyncio
+async def test_cmd_sounds():
+    response = await commands.cmd_sounds()
+
+    assert response.startswith('Available sounds:')
+    assert len(response.split('\n')) == len(commands.sounds) + 1

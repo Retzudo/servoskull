@@ -8,19 +8,23 @@ from servoskull.settings import CMD_PREFIX
 
 logging.basicConfig(level=logging.INFO)
 
+sounds = {
+    'horn': 'https://www.youtube.com/watch?v=1ytCEuuW2_A'
+}
+
 
 async def cmd_help(arguments: list=None, **kwargs) -> str:
     """Respond with a help message containing all available commands."""
-    response = 'Available commands:\n'
+    response = 'Available commands:'
     for key, value in commands.items():
         arguments = ""
         if 'arguments' in value:
             for argument in value['arguments']:
                 arguments += '**<{}>** '.format(argument)
 
-        response += '  **{}{}** {}- {}\n'.format(CMD_PREFIX, key, arguments, value['description'])
+        response += '\n  **{}{}** {}- {}'.format(CMD_PREFIX, key, arguments, value['description'])
 
-    response += 'Either prepend your command with `{}` or mention the bot using `@`.'.format(
+    response += '\nEither prepend your command with `{}` or mention the bot using `@`.'.format(
         CMD_PREFIX
     )
 
@@ -123,16 +127,29 @@ async def cmd_disconnect(arguments: list=None, **kwargs) -> str:
         await voice_client.disconnect()
 
 
-async def cmd_horn(arguments: list=None, **kwargs) -> str:
-    """Play a horn sound."""
+async def cmd_sounds(arguments: list=None, **kwargs) -> str:
+    response = "Available sounds:"
+    for key, value in sounds.items():
+        response += "\n  **{}**: {}".format(key, value)
+
+    return response
+
+
+async def cmd_sound(arguments: list=None, **kwargs) -> str:
+    """Play a sound."""
     message = kwargs['message']
-    horn_url = 'https://www.youtube.com/watch?v=1ytCEuuW2_A'
     client = kwargs['client']
+
     voice_client = client.voice_client_in(message.server)
     if not voice_client:
         return 'I am not connected to any voice channel'
 
-    player = voice_client.create_ytdl_player(horn_url)
+    sound = arguments[0]
+    url = sounds.get(sound)
+    if not url:
+        return 'No such sound.'
+
+    player = voice_client.create_ytdl_player(url)
     player.start()
 
 
@@ -174,5 +191,14 @@ commands = {
     'disconnect': {
         'fn': cmd_disconnect,
         'description': 'Disconnects the bot from the current voice channel'
+    },
+    'sounds': {
+        'fn': cmd_sounds,
+        'description': 'Respond with a list of available sounds for voice channels'
+    },
+    'sound': {
+        'fn': cmd_sound,
+        'arguments': ['sound'],
+        'description': 'Play a sound (`sounds for a list`)'
     }
 }
