@@ -26,7 +26,7 @@ def cmd_help(arguments: list=None) -> str:
     return response
 
 
-def cmd_yesno(arguments: list =None) -> str:
+def cmd_yesno(arguments: list=None) -> str:
     """Respond with 'yes' or 'no', chosen randomly."""
     return random.choice(['yes', 'no'])
 
