@@ -1,10 +1,11 @@
 import logging
 import random
 
+import discord
 import requests
 from imperialdate import ImperialDate
 
-from servoskull.settings import CMD_PREFIX
+from servoskull.settings import CMD_PREFIX, USE_AVCONV
 
 logging.basicConfig(level=logging.INFO)
 
@@ -101,6 +102,9 @@ async def cmd_summon(arguments: list=None, **kwargs) -> str:
     """Have the bot connect to the voice channel of the message's user."""
     message = kwargs['message']
     client = kwargs['client']
+    if not isinstance(message.author, discord.Member):
+        return 'Due to some Discord API limitation you need to issue this command in a channel.'
+
     voice_channel = message.author.voice.voice_channel
     if not voice_channel:
         return 'You are not connected to any voice channel'
@@ -148,7 +152,7 @@ async def cmd_sound(arguments: list=None, **kwargs) -> str:
     if not url:
         return 'No such sound "{}". Use `sounds` for a list of sounds'.format(sound)
 
-    player = voice_client.create_ytdl_player(url)
+    player = await voice_client.create_ytdl_player(url, use_avconv=USE_AVCONV)
     player.start()
 
 

@@ -1,9 +1,11 @@
 FROM python
 
+RUN apt-get update && apt-get install -y libffi-dev libav-tools
+
 COPY . /servoskull
 WORKDIR /servoskull
 
-RUN apt-get update && apt-get install libffi-dev
 RUN pip install -r requirements.txt
+ENV SERVOSKULL_AVCONV=1
 
-CMD python -m servoskull.client
+CMD echo $PATH && which avconv && python -m servoskull.client
