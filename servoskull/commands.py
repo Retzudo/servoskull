@@ -126,6 +126,7 @@ async def cmd_disconnect(arguments: list=None, **kwargs) -> str:
 
 
 async def cmd_sounds(arguments: list=None, **kwargs) -> str:
+    """Respond with a list of available sounds for the `sound` command."""
     response = "Available sounds:"
     for key, value in sounds.items():
         response += "\n  **{}**: {}".format(key, value)
