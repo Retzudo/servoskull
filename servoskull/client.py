@@ -44,7 +44,7 @@ def get_command_by_mention(message_string):
 
 def get_closest_command(command):
     """Given a string, return the command that's most similar to it."""
-    available_commands = [key.lower() for key, _ in commands.items()]
+    available_commands = commands.keys()
 
     closest_commands = get_close_matches(command.lower(), available_commands, 1)
     if len(closest_commands) >= 1:
