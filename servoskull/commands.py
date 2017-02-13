@@ -4,13 +4,12 @@ import random
 import requests
 from imperialdate import ImperialDate
 
-from servoskull.client import client
 from servoskull.settings import CMD_PREFIX
 
 logging.basicConfig(level=logging.INFO)
 
 
-async def cmd_help(arguments: list=None, message=None) -> str:
+async def cmd_help(arguments: list=None, **kwargs) -> str:
     """Respond with a help message containing all available commands."""
     response = 'Available commands:\n'
     for key, value in commands.items():
@@ -28,12 +27,12 @@ async def cmd_help(arguments: list=None, message=None) -> str:
     return response
 
 
-async def cmd_yesno(arguments: list=None, message=None) -> str:
+async def cmd_yesno(arguments: list=None, **kwargs) -> str:
     """Respond with 'yes' or 'no', chosen randomly."""
     return random.choice(['yes', 'no'])
 
 
-async def cmd_gif(arguments: list=None, message=None) -> str:
+async def cmd_gif(arguments: list=None, **kwargs) -> str:
     """Respond with a gif that matches a title or a tag of a gif
     at https://gifs.retzudo.com."""
     if not arguments:
@@ -55,12 +54,12 @@ async def cmd_gif(arguments: list=None, message=None) -> str:
     return 'No gif found'
 
 
-async def cmd_date(arguments: list=None, message=None) -> str:
+async def cmd_date(arguments: list=None, **kwargs) -> str:
     """Respond with the current Imperial Date."""
     return "By the Emperor's grace it is {}".format(ImperialDate())
 
 
-async def cmd_identify(arguments: list=None, message=None) -> str:
+async def cmd_identify(arguments: list=None, **kwargs) -> str:
     """Respond with a little RP text."""
     return """A Servo-skull is a drone-like robotic device that appears to be a human skull outfitted with electronic
     or cybernetic components that utilise embedded anti-gravity field generators to allow them to hover and drift
@@ -71,7 +70,7 @@ async def cmd_identify(arguments: list=None, message=None) -> str:
     to warrant continuation beyond death."""
 
 
-async def cmd_next_holiday(arguments: list=None, message=None) -> str:
+async def cmd_next_holiday(arguments: list=None, **kwargs) -> str:
     """Respond with when the next holiday is according to holidays.retzudo.com."""
     holiday = requests.get('https://holidays.retzudo.com/next.json').json()
 
@@ -82,7 +81,7 @@ async def cmd_next_holiday(arguments: list=None, message=None) -> str:
     )
 
 
-async def cmd_roll(arguments: list=None, message=None) -> str:
+async def cmd_roll(arguments: list=None, **kwargs) -> str:
     """Respond with a roll of a die."""
     try:
         if not arguments:
@@ -96,8 +95,10 @@ async def cmd_roll(arguments: list=None, message=None) -> str:
     return 'Rolled a {}-sided die: {}'.format(sides, random.randint(1, sides))
 
 
-async def cmd_summon(arguments: list=None, message=None) -> str:
+async def cmd_summon(arguments: list=None, **kwargs) -> str:
     """Have the bot connect to the voice channel of the message's user."""
+    message = kwargs['message']
+    client = kwargs['client']
     voice_channel = message.author.voice.voice_channel
     if not voice_channel:
         return 'You are not connected to any voice channel'
@@ -111,8 +112,10 @@ async def cmd_summon(arguments: list=None, message=None) -> str:
     return 'Connected to "{}"'.format(voice_channel.name)
 
 
-async def cmd_disconnect(arguments: list=None, message=None) -> str:
+async def cmd_disconnect(arguments: list=None, **kwargs) -> str:
     """Disconnect from the current voice channel."""
+    message = kwargs['message']
+    client = kwargs['client']
     voice_client = client.voice_client_in(message.server)
     if not voice_client:
         return 'I am not connected to any voice channel'
@@ -120,9 +123,11 @@ async def cmd_disconnect(arguments: list=None, message=None) -> str:
         await voice_client.disconnect()
 
 
-async def cmd_horn(arguments: list=None, message=None) -> str:
+async def cmd_horn(arguments: list=None, **kwargs) -> str:
     """Play a horn sound."""
+    message = kwargs['message']
     horn_url = 'https://www.youtube.com/watch?v=1ytCEuuW2_A'
+    client = kwargs['client']
     voice_client = client.voice_client_in(message.server)
     if not voice_client:
         return 'I am not connected to any voice channel'
