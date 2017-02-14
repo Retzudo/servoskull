@@ -8,4 +8,4 @@ WORKDIR /servoskull
 RUN pip install -r requirements.txt
 ENV SERVOSKULL_AVCONV=1
 
-CMD echo $PATH && which avconv && python -m servoskull.client
+CMD python -m servoskull.client
