@@ -35,15 +35,17 @@ class SoundCommand(Command):
 
 
 class CommandHelp(Command):
+    help_text = 'List all commands'
+
     async def execute(self) -> str:
         """Respond with a help message containing all available commands."""
         response = 'Available commands:'
-        for key, value in commands.items():
+        for command, cls in commands.items():
             arguments = ""
-            for argument in value['class'].required_arguments:
+            for argument in cls.required_arguments:
                 arguments += '**<{}>** '.format(argument)
 
-            response += '\n  **{}{}** {}- {}'.format(CMD_PREFIX, key, arguments, value['description'])
+            response += '\n  **{}{}** {}- {}'.format(CMD_PREFIX, command, arguments, cls.help_text)
 
         response += '\nEither prepend your command with `{}` or mention the bot using `@`.'.format(CMD_PREFIX)
 
@@ -51,6 +53,8 @@ class CommandHelp(Command):
 
 
 class CommandYesNo(Command):
+    help_text = 'Respond with yes or no'
+
     async def execute(self) -> str:
         """Respond with 'yes' or 'no', chosen randomly."""
         return random.choice(['yes', 'no'])
@@ -58,6 +62,7 @@ class CommandYesNo(Command):
 
 class CommandGif(Command):
     required_arguments = ['name or tag']
+    help_text = 'Respond with a gif from https://gifs.retzudo.com'
 
     async def execute(self) -> str:
         """Respond with a gif that matches a title or a tag of a gif
@@ -82,12 +87,15 @@ class CommandGif(Command):
 
 
 class CommandDate(Command):
+    help_text = 'Respond with the current Imperial Date'
     async def execute(self) -> str:
         """Respond with the current Imperial Date."""
         return "By the Emperor's grace it is {}".format(ImperialDate())
 
 
 class CommandIdentify(Command):
+    help_text = 'Identifies the servo-skull'
+
     async def execute(self) -> str:
         """Respond with a little RP text."""
         return """A Servo-skull is a drone-like robotic device that appears to be a human skull outfitted with electronic
@@ -100,6 +108,8 @@ class CommandIdentify(Command):
 
 
 class CommandNextHoliday(Command):
+    help_text = 'Respond with with when the next holiday is'
+
     async def execute(self) -> str:
         holiday = requests.get('https://holidays.retzudo.com/next.json').json()
 
@@ -112,6 +122,7 @@ class CommandNextHoliday(Command):
 
 class CommandRoll(Command):
     required_arguments = ['n']
+    help_text = 'Roll an n-sided die'
 
     async def execute(self) -> str:
         """Respond with a roll of a die."""
@@ -128,6 +139,8 @@ class CommandRoll(Command):
 
 
 class CommandSummon(SoundCommand):
+    help_text = "Summons the bot to the user's voice channel"
+
     async def execute(self) -> str:
         """Have the bot connect to the voice channel of the message's user."""
         if not isinstance(self.message.author, discord.Member):
@@ -147,6 +160,8 @@ class CommandSummon(SoundCommand):
 
 
 class CommandDisconnect(SoundCommand):
+    help_text = 'Disconnects the bot from the current voice channel'
+
     async def execute(self) -> str:
         """Disconnect from the current voice channel."""
         voice_client = self._get_voice_client()
@@ -157,6 +172,7 @@ class CommandDisconnect(SoundCommand):
 
 
 class CommandSound(SoundCommand):
+    help_text = 'Play a sound (`sounds` for a list)'
     sounds = {
         'horn': 'https://www.youtube.com/watch?v=1ytCEuuW2_A'
     }
@@ -179,6 +195,8 @@ class CommandSound(SoundCommand):
 
 
 class CommandSounds(Command):
+    help_text = 'Respond with a list of available sounds for voice channels'
+
     async def execute(self) -> str:
         """Respond with a list of available sounds for the `sound` command."""
         response = "Available sounds:"
@@ -189,48 +207,15 @@ class CommandSounds(Command):
 
 
 commands = {
-    'help': {
-        'class': CommandHelp,
-        'description': 'List all commands',
-    },
-    'yesno': {
-        'class': CommandYesNo,
-        'description': 'Respond with yes or no'
-    },
-    'gif': {
-        'class': CommandGif,
-        'description': 'Respond with a gif from gifs.retzudo.com'
-    },
-    'date': {
-        'class': CommandDate,
-        'description': 'Respond with the current Imperial Date'
-    },
-    'identify': {
-        'class': CommandIdentify,
-        'description': 'Identifies the servo-skull'
-    },
-    'holiday': {
-        'class': CommandNextHoliday,
-        'description': 'Respond with with when the next holiday is'
-    },
-    'roll': {
-        'class': CommandRoll,
-        'description': 'Roll an n-sided die'
-    },
-    'summon': {
-        'class': CommandSummon,
-        'description': "Summons the bot to the user's voice channel"
-    },
-    'disconnect': {
-        'class': CommandDisconnect,
-        'description': 'Disconnects the bot from the current voice channel'
-    },
-    'sounds': {
-        'class': CommandSounds,
-        'description': 'Respond with a list of available sounds for voice channels'
-    },
-    'sound': {
-        'class': CommandSound,
-        'description': 'Play a sound (`sounds` for a list)'
-    }
+    'help': CommandHelp,
+    'yesno': CommandYesNo,
+    'gif': CommandGif,
+    'date':  CommandDate,
+    'identify': CommandIdentify,
+    'holiday': CommandNextHoliday,
+    'roll': CommandRoll,
+    'summon': CommandSummon,
+    'disconnect': CommandDisconnect,
+    'sounds': CommandSounds,
+    'sound': CommandSound,
 }

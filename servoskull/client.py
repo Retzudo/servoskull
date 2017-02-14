@@ -75,7 +75,8 @@ async def execute_command(command, arguments, discord_client, message=None):
         if closest_command:
             response += ' Did you mean {}?'.format(closest_command)
     else:
-        command = commands[command]['class'](arguments=arguments, message=message, client=client)
+        cls = commands[command]
+        command = cls(arguments=arguments, message=message, client=client)
         response = await command.execute()
 
     if response:
