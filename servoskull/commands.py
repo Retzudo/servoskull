@@ -12,15 +12,13 @@ logging.basicConfig(level=logging.INFO)
 
 class Command:
     """Base class for all commands."""
+    required_arguments = []
+
     def __init__(self, **kwargs):
         self.arguments = kwargs.get('arguments')
 
     async def execute(self) -> str:
         raise NotImplementedError()
-
-    @property
-    def required_arguments(self):
-        return []
 
 
 class SoundCommand(Command):
@@ -42,7 +40,7 @@ class CommandHelp(Command):
         response = 'Available commands:'
         for key, value in commands.items():
             arguments = ""
-            for argument in value['class']().required_arguments:
+            for argument in value['class'].required_arguments:
                 arguments += '**<{}>** '.format(argument)
 
             response += '\n  **{}{}** {}- {}'.format(CMD_PREFIX, key, arguments, value['description'])
@@ -59,9 +57,7 @@ class CommandYesNo(Command):
 
 
 class CommandGif(Command):
-    @property
-    def required_arguments(self):
-        return ['name or tag']
+    required_arguments = ['name or tag']
 
     async def execute(self) -> str:
         """Respond with a gif that matches a title or a tag of a gif
@@ -115,9 +111,7 @@ class CommandNextHoliday(Command):
 
 
 class CommandRoll(Command):
-    @property
-    def required_arguments(self):
-        return ['n']
+    required_arguments = ['n']
 
     async def execute(self) -> str:
         """Respond with a roll of a die."""
@@ -167,9 +161,7 @@ class CommandSound(SoundCommand):
         'horn': 'https://www.youtube.com/watch?v=1ytCEuuW2_A'
     }
 
-    @property
-    def required_arguments(self):
-        return ['sound']
+    required_arguments = ['sound']
 
     async def execute(self) -> str:
         """Play a sound."""
