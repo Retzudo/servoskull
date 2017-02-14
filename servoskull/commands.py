@@ -13,6 +13,7 @@ logging.basicConfig(level=logging.INFO)
 class Command:
     """Base class for all commands."""
     required_arguments = []
+    help_text = None
 
     def __init__(self, **kwargs):
         self.arguments = kwargs.get('arguments')
