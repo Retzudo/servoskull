@@ -172,12 +172,11 @@ class CommandDisconnect(SoundCommand):
 
 
 class CommandSound(SoundCommand):
+    required_arguments = ['sound']
     help_text = 'Play a sound (`sounds` for a list)'
     sounds = {
-        'horn': 'https://www.youtube.com/watch?v=1ytCEuuW2_A'
+        'horn': 'https://www.youtube.com/watch?v=1ytCEuuW2_A',
     }
-
-    required_arguments = ['sound']
 
     async def execute(self) -> str:
         """Play a sound."""
