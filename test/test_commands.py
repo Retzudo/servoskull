@@ -5,7 +5,8 @@ from servoskull import commands
 
 @pytest.mark.asyncio
 async def test_cmd_help():
-    response = await commands.cmd_help()
+    command = commands.CommandHelp()
+    response = await command.execute()
 
     assert response.startswith('Available commands:')
     assert len(response.split('\n')) == len(commands.commands.keys()) + 2
@@ -13,31 +14,36 @@ async def test_cmd_help():
 
 @pytest.mark.asyncio
 async def test_cmd_yesno():
-    response = await commands.cmd_yesno()
+    command = commands.CommandYesNo()
+    response = await command.execute()
 
     assert response in ['yes', 'no']
 
 
 @pytest.mark.asyncio
 async def test_cmd_gif():
-    response = await commands.cmd_gif()
+    command = commands.CommandGif()
+    response = await command.execute()
     assert response.startswith('Find a gif')
 
-    response = await commands.cmd_gif(['worf'])
+    command = commands.CommandGif(arguments=['worf'])
+    response = await command.execute()
     assert response.startswith('https://')
 
 
 @pytest.mark.asyncio
 async def test_cmd_date():
     import re
-    response = await commands.cmd_date()
+    command = commands.CommandDate()
+    response = await command.execute()
 
     assert re.match("^By the Emperor's grace it is 0 \d{3} \d{3}\.M\d$", response)
 
 
 @pytest.mark.asyncio
 async def test_cmd_identify():
-    response = await commands.cmd_identify()
+    command = commands.CommandIdentify()
+    response = await command.execute()
 
     assert len(response) > 100
     assert response.startswith('A Servo-skull is a drone-like')
@@ -46,47 +52,59 @@ async def test_cmd_identify():
 @pytest.mark.asyncio
 async def test_cmd_next_holiday():
     import re
-    response = await commands.cmd_next_holiday()
+    command = commands.CommandNextHoliday()
+    response = await command.execute()
 
     assert re.match('^The next holiday is "\w+" .* \(\d{4}-\d{2}-\d{2}\)$', response)
 
 
 @pytest.mark.asyncio
 async def test_cmd_roll():
-    response = await commands.cmd_roll()
+    command = commands.CommandRoll()
+    response = await command.execute()
     assert response == 'Please specify a valid integer >= 2'
 
-    response = await commands.cmd_roll([])
+    command = commands.CommandRoll(arguments=[])
+    response = await command.execute()
     assert response == 'Please specify a valid integer >= 2'
 
-    response = await commands.cmd_roll(['1'])
+    command = commands.CommandRoll(arguments=['1'])
+    response = await command.execute()
     assert response.startswith('Please specify a valid integer >= 2')
 
-    response = await commands.cmd_roll(['0'])
+    command = commands.CommandRoll(arguments=['0'])
+    response = await command.execute()
     assert response.startswith('Please specify a valid integer >= 2')
 
-    response = await commands.cmd_roll(['-23'])
+    command = commands.CommandRoll(arguments=['-23'])
+    response = await command.execute()
     assert response.startswith('Please specify a valid integer >= 2')
 
-    response = await commands.cmd_roll(['bla'])
+    command = commands.CommandRoll(arguments=['bla'])
+    response = await command.execute()
     assert response == 'Please specify a valid integer >= 2'
 
-    response = await commands.cmd_roll(['bla', 'bla', 'bla'])
+    command = commands.CommandRoll(arguments=['bla', 'bla', 'bla'])
+    response = await command.execute()
     assert response == 'Please specify a valid integer >= 2'
 
-    response = await commands.cmd_roll(['6'])
+    command = commands.CommandRoll(arguments=['6'])
+    response = await command.execute()
     assert response.startswith('Rolled a 6-sided die:')
 
-    response = await commands.cmd_roll(['6', 'bla'])
+    command = commands.CommandRoll(arguments=['6', 'bla'])
+    response = await command.execute()
     assert response.startswith('Rolled a 6-sided die:')
 
-    response = await commands.cmd_roll(['100'])
+    command = commands.CommandRoll(arguments=['100'])
+    response = await command.execute()
     assert response.startswith('Rolled a 100-sided die:')
 
 
 @pytest.mark.asyncio
 async def test_cmd_sounds():
-    response = await commands.cmd_sounds()
+    command = commands.CommandSounds()
+    response = await command.execute()
 
     assert response.startswith('Available sounds:')
-    assert len(response.split('\n')) == len(commands.sounds) + 1
+    assert len(response.split('\n')) == len(commands.CommandSound.sounds) + 1
