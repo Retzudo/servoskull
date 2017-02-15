@@ -46,7 +46,7 @@ async def test_cmd_identify():
     response = await command.execute()
 
     assert len(response) > 100
-    assert response.startswith('A Servo-skull is a drone-like')
+    assert response.startswith('Servo-skull active.')
 
 
 @pytest.mark.asyncio
