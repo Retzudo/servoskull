@@ -126,7 +126,7 @@ class CommandIdentify(Command):
             "Terra and other pious Imperial servants to which robotic components and an antigravitic impeller have "
             "been added.This is so that they may continue their work for the Emperor of Mankind even after death. To "
             "have one's; skull chosen to serve as a; Servo-skull is a great honour in the Imperium, for it implies "
-            "one\'s service in life has been satisfactory enough to warrant continuation beyond death. "
+            "one\'s service in life has been satisfactory enough to warrant continuation beyond death."
         )
 
         return (
