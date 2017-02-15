@@ -111,14 +111,26 @@ class CommandIdentify(Command):
     help_text = 'Identifies the servo-skull'
 
     async def execute(self) -> str:
-        """Respond with a little RP text."""
-        return """A Servo-skull is a drone-like robotic device that appears to be a human skull outfitted with electronic
-        or cybernetic components that utilise embedded anti-gravity field generators to allow them to hover and drift
-        bodiless through the air. They are fashioned from the skulls of loyal Adepts of the Adeptus Terra and other pious
-        Imperial servants to which robotic components and an antigravitic impeller have been added. This is so that they
-        may continue their work for the Emperor of Mankind even after death. To have one's skull chosen to serve as a
-        Servo-skull is a great honour in the Imperium, for it implies one's service in life has been satisfactory enough
-        to warrant continuation beyond death."""
+        """Respond with a little RP text and the bot's version."""
+        from datetime import datetime
+        from dateutil.relativedelta import relativedelta
+        import servoskull
+
+        now = datetime.now()
+        uptime_delta = relativedelta(now, servoskull.start_time)
+        uptime = '{0.hours} hours {0.minutes} minutes {0.seconds} seconds'.format(uptime_delta)
+
+        return """Servo-skull active. Vox module operational.
+Version: **{}**
+Uptime: **{}**
+
+*A Servo-skull is a drone-like robotic device that appears to be a human skull outfitted with electronic
+or cybernetic components that utilise embedded anti-gravity field generators to allow them to hover and drift
+bodiless through the air. They are fashioned from the skulls of loyal Adepts of the Adeptus Terra and other pious
+Imperial servants to which robotic components and an antigravitic impeller have been added. This is so that they
+may continue their work for the Emperor of Mankind even after death. To have one's skull chosen to serve as a
+Servo-skull is a great honour in the Imperium, for it implies one's service in life has been satisfactory enough
+to warrant continuation beyond death.*""".format(servoskull.__version__, uptime)
 
 
 class CommandNextHoliday(Command):
