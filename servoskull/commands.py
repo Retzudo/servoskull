@@ -37,6 +37,11 @@ class SoundCommand(Command):
     async def execute(self) -> str:
         """We override the `execute` method of `Command` and run a check before every execution
         if the bot is connected to a voice channel."""
+        if not isinstance(self.message.author, discord.Member):
+            # We can't easily determine which voice channel a user is connected to
+            # if they message the bot with direct messaging.
+            return 'Due to some Discord API limitation you need to issue this command in a channel.'
+
         if not self._get_voice_client():
             return 'I am not connected to any voice channel'
         else:
