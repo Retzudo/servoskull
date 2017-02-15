@@ -5,6 +5,18 @@
 *A custom Discord bot.*
 
 ## Running the bot
+
+### Checking for ffmpeg
+
+Debian systems prior to 9 (Stretch) and Ubuntu systems prior to 15.04
+use *libav* instead of *ffmpeg*. Therefore you need to have the environment
+variable `SERVOSKULL_AVCONV` with any value present on those systems
+before running the bot. If it doesn't exist, the bot won't be able to
+play sounds in voice channels because it assumes an `ffmpeg` executable
+to be present in `$PATH`.
+
+### Docker
+
 1. Build the Docker image: `docker build -t servoskull .`
 2. Run a Docker container: `docker run --name servoskull --restart=always -e SERVOSKULL_TOKEN=<YOUR_TOKEN> servoskull`
 3. Open `https://discordapp.com/api/oauth2/authorize?scope=bot&permissions=0&client_id=<YOUR_CLIENT_ID>`.

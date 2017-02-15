@@ -12,8 +12,8 @@ logging.basicConfig(level=logging.INFO)
 
 class Command:
     """Base class for all commands."""
-    required_arguments = []
     help_text = None
+    required_arguments = []
 
     def __init__(self, **kwargs):
         self.arguments = kwargs.get('arguments')
@@ -41,12 +41,12 @@ class CommandHelp(Command):
     async def execute(self) -> str:
         """Respond with a help message containing all available commands."""
         response = 'Available commands:'
-        for command, cls in commands.items():
-            arguments = ""
-            for argument in cls.required_arguments:
+        for command, class_ in commands.items():
+            arguments = ''
+            for argument in class_.required_arguments:
                 arguments += '**<{}>** '.format(argument)
 
-            response += '\n  **{}{}** {}- {}'.format(CMD_PREFIX, command, arguments, cls.help_text)
+            response += '\n  **{}{}** {}- {}'.format(CMD_PREFIX, command, arguments, class_.help_text)
 
         response += '\nEither prepend your command with `{}` or mention the bot using `@`.'.format(CMD_PREFIX)
 
@@ -89,6 +89,7 @@ class CommandGif(Command):
 
 class CommandDate(Command):
     help_text = 'Respond with the current Imperial Date'
+
     async def execute(self) -> str:
         """Respond with the current Imperial Date."""
         return "By the Emperor's grace it is {}".format(ImperialDate())
@@ -122,8 +123,8 @@ class CommandNextHoliday(Command):
 
 
 class CommandRoll(Command):
-    required_arguments = ['n']
     help_text = 'Roll an n-sided die'
+    required_arguments = ['n']
 
     async def execute(self) -> str:
         """Respond with a roll of a die."""
@@ -145,6 +146,8 @@ class CommandSummon(SoundCommand):
     async def execute(self) -> str:
         """Have the bot connect to the voice channel of the message's user."""
         if not isinstance(self.message.author, discord.Member):
+            # We can't easily determine which voice channel a user is connected to
+            # if they message the bot with direct messaging.
             return 'Due to some Discord API limitation you need to issue this command in a channel.'
 
         voice_channel = self.message.author.voice.voice_channel
@@ -173,8 +176,10 @@ class CommandDisconnect(SoundCommand):
 
 
 class CommandSound(SoundCommand):
-    required_arguments = ['sound']
     help_text = 'Play a sound (`sounds` for a list)'
+    required_arguments = ['sound']
+
+    # List of available sounds
     sounds = {
         'horn': 'https://www.youtube.com/watch?v=1ytCEuuW2_A',
     }

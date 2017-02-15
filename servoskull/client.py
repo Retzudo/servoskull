@@ -60,11 +60,15 @@ async def on_ready():
 @client.event
 async def on_message(message):
     """Listen for messages."""
+    command = None
+    arguments = None
+
     if message.content.startswith(CMD_PREFIX):
         command, arguments = get_command_by_prefix(message.content)
-        await execute_command(command, arguments, client, message)
     elif client.user.mentioned_in(message):
         command, arguments = get_command_by_mention(message.content)
+
+    if command:
         await execute_command(command, arguments, client, message)
 
 
@@ -75,11 +79,13 @@ async def execute_command(command, arguments, discord_client, message=None):
         if closest_command:
             response += ' Did you mean {}?'.format(closest_command)
     else:
-        cls = commands[command]
-        command = cls(arguments=arguments, message=message, client=client)
+        class_ = commands[command]
+        command = class_(arguments=arguments, message=message, client=client)
         response = await command.execute()
 
     if response:
+        # Only response if there's actually a response.
+        # Some commands don't need to respond with text.
         await discord_client.send_message(message.channel, response)
         logging.info(response)
 
