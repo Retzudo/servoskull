@@ -3,10 +3,8 @@ appdirs==1.4.0
 async-timeout==1.1.0
 cffi==1.9.1
 chardet==2.3.0
-discord.py==0.16.5
-greenlet==0.4.12
+discord.py==0.16.6
 -e git://github.com/Retzudo/imperial-date-python.git@8039f14531e18327c2c700803d3de31d3c7b5563#egg=imperialdate
-msgpack-python==0.4.8
 multidict==2.1.4
 packaging==16.8
 py==1.4.32
@@ -18,4 +16,4 @@ pytest-asyncio==0.5.0
 requests==2.13.0
 six==1.10.0
 websockets==3.2
-youtube-dl==2017.2.11
+youtube-dl==2017.2.14
