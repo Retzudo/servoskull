@@ -30,6 +30,18 @@ class SoundCommand(Command):
         self.message = kwargs.get('message')
         self.client = kwargs.get('client')
 
+    async def execute_sound(self):
+        """Should be implemented by SoundCommand children instead of `execute`."""
+        raise NotImplementedError()
+
+    async def execute(self) -> str:
+        """We override the `execute` method of `Command` and run a check before every execution
+        if the bot is connected to a voice channel."""
+        if not self._get_voice_client():
+            return 'I am not connected to any voice channel'
+        else:
+            return await self.execute_sound()
+
     def _get_voice_client(self):
         """Return the currently connected voice client of the message's server."""
         return self.client.voice_client_in(self.message.server)
@@ -144,7 +156,10 @@ class CommandSummon(SoundCommand):
     help_text = "Summons the bot to the user's voice channel"
 
     async def execute(self) -> str:
-        """Have the bot connect to the voice channel of the message's user."""
+        """Have the bot connect to the voice channel of the message's user.
+
+        This class implements `execute` instead of `execute_sound` because the bot not being
+        connected to a voice channel is a valid state for this command."""
         if not isinstance(self.message.author, discord.Member):
             # We can't easily determine which voice channel a user is connected to
             # if they message the bot with direct messaging.
@@ -166,13 +181,10 @@ class CommandSummon(SoundCommand):
 class CommandDisconnect(SoundCommand):
     help_text = 'Disconnects the bot from the current voice channel'
 
-    async def execute(self) -> str:
+    async def execute_sound(self) -> str:
         """Disconnect from the current voice channel."""
         voice_client = self._get_voice_client()
-        if not voice_client:
-            return 'I am not connected to any voice channel'
-        else:
-            await voice_client.disconnect()
+        await voice_client.disconnect()
 
 
 class CommandSound(SoundCommand):
@@ -184,11 +196,9 @@ class CommandSound(SoundCommand):
         'horn': 'https://www.youtube.com/watch?v=1ytCEuuW2_A',
     }
 
-    async def execute(self) -> str:
+    async def execute_sound(self) -> str:
         """Play a sound."""
-        voice_client = self.client.voice_client_in(self.message.server)
-        if not voice_client:
-            return 'I am not connected to any voice channel'
+        voice_client = self._get_voice_client()
 
         sound = self.arguments[0]
         url = CommandSound.sounds.get(sound)
