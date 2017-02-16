@@ -40,6 +40,11 @@ If you want to change the default command prefix `!` to something else, add anot
 
 
 ## Extending the command list
-Create a new class in `commands.py` that inherits from `Command` or `SoundCommand` depending on what you need and
-implement the `execute` method. Finally, add your new class to the `commands` dictionary. The class properties
-`help_text` and `required_arguments` are optional it's highly recommended you add them.
+
+### Regular command
+
+A regular command is a command that does *something* and optionally returns a string. Create a new class in `commands.py`, inherit from `Command` and override the `execute` method where you can do anything. If you want the bot respond with a message, just return a string.
+
+### Sound command
+
+A sound command is a command that requires the bot to be connected to a voice channel before running the command. E. g. a command that plays a sound. Create a class in `commands.py`, inherit from `SoundCommand` and override the `execute_sound` method (*not* the `execute` method). 
