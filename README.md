@@ -2,7 +2,20 @@
 
 # Servo-skull
 
-*A custom Discord bot.*
+## What is it?
+
+A custom Discord bot for my server.
+
+## What does it do?
+
+Respond to commands either by prefix or when mentioned like a regular user. Can also play some
+sounds in voice channels.
+
+## What does it *not* do?
+
+1. User management like kicking and banning
+1. Greet people when they come online
+1. Other crap I don't need but 99% of other bots seem to do
 
 ## Running the bot
 
