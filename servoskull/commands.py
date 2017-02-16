@@ -116,7 +116,7 @@ class CommandIdentify(Command):
     help_text = 'Identifies the servo-skull'
 
     async def execute(self) -> str:
-        """Respond with a little RP text and the bot's version."""
+        """Respond with some info and a little RP text."""
         from datetime import datetime
         from dateutil.relativedelta import relativedelta
         import servoskull

@@ -12,5 +12,3 @@ CMD_PREFIX = os.getenv(ENV_PREFIX, '!')
 # use libav instead. This env variable needs to be set on those
 # systems including the Docker image.
 USE_AVCONV = True if os.getenv(ENV_USE_AVCONV) else False
-
-START_TIME = datetime.utcnow()
