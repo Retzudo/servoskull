@@ -3,7 +3,9 @@ from difflib import get_close_matches
 
 import discord
 
+from servoskull import ServoSkullError
 from servoskull.commands import commands
+from servoskull.logging import logger
 from servoskull.settings import CMD_PREFIX, DISCORD_TOKEN, ENV_PREFIX
 
 client = discord.Client()
@@ -59,23 +61,29 @@ async def on_message(message):
     command = None
     arguments = None
 
+    logger.debug('Read message: "{}"'.format(message.content))
     if message.content.startswith(CMD_PREFIX):
         command, arguments = get_command_by_prefix(message.content)
+        logger.debug('Read command by prefix - command: "{}"; arguments: {}'.format(command, arguments))
     elif client.user.mentioned_in(message):
         command, arguments = get_command_by_mention(message.content)
+        logger.debug('Read command by mention - command: "{}"; arguments: {}'.format(command, arguments))
 
     if command:
         await execute_command(command, arguments, client, message)
 
 
-async def execute_command(command, arguments, discord_client, message=None):
+async def execute_command(command, arguments, discord_client, message):
     if command not in commands:
+        logger.debug('User {} issued non-existing command "{}"'.format(message.author, command))
         response = 'No such command "{}".'.format(command, get_closest_command(command))
         closest_command = get_closest_command(command)
         if closest_command:
             response += ' Did you mean {}?'.format(closest_command)
+        logger.info(response)
     else:
         class_ = commands[command]
+        logger.debug('Executing command "{}"'.format(command))
         command = class_(arguments=arguments, message=message, client=client)
         response = await command.execute()
 
@@ -87,13 +95,16 @@ async def execute_command(command, arguments, discord_client, message=None):
 
 
 if __name__ == '__main__':
-    if not CMD_PREFIX:
-        client.close()
-        raise ServoSkullError('Invalid command prefix')
-    if not DISCORD_TOKEN:
-        client.close()
-        raise ServoSkullError(
-            'Discord API token not set with the {} environment variable'.format(ENV_PREFIX)
-        )
+    try:
+        if not CMD_PREFIX:
+            raise ServoSkullError('Invalid command prefix')
+        if not DISCORD_TOKEN:
+            raise ServoSkullError(
+                'Discord API token not set with the {} environment variable'.format(ENV_PREFIX)
+            )
 
-    client.run(DISCORD_TOKEN)
+        client.run(DISCORD_TOKEN)
+    except ServoSkullError as error:
+        logger.error(error, exc_info=True)
+    finally:
+        client.close()
