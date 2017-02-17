@@ -1,3 +1,4 @@
+import aiohttp
 import logging
 import random
 
@@ -82,13 +83,17 @@ class CommandGif(Command):
     required_arguments = ['name or tag']
     help_text = 'Respond with a gif from https://gifs.retzudo.com'
 
+    GIFS_URL = 'https://gifs.retzudo.com/gifs.json'
+
     async def execute(self) -> str:
         """Respond with a gif that matches a title or a tag of a gif
         at https://gifs.retzudo.com."""
         if not self.arguments or len(self.arguments) < 1:
             return 'Find a gif at https://gifs.retzudo.com'
 
-        gifs = requests.get('https://gifs.retzudo.com/gifs.json').json()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(CommandGif.GIFS_URL) as response:
+                gifs = await response.json()
 
         for gif in gifs['gifs']:
             haystack = gif['title'].lower()
@@ -151,8 +156,12 @@ class CommandIdentify(Command):
 class CommandNextHoliday(Command):
     help_text = 'Respond with with when the next holiday is'
 
+    HOLIDAY_URL = 'https://holidays.retzudo.com/next.json'
+
     async def execute(self) -> str:
-        holiday = requests.get('https://holidays.retzudo.com/next.json').json()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(CommandNextHoliday.HOLIDAY_URL) as response:
+                holiday = await response.json()
 
         return 'The next holiday is "{}" {} ({})'.format(
             holiday['name'],
