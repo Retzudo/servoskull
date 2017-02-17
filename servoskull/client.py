@@ -9,10 +9,6 @@ from servoskull.settings import CMD_PREFIX, DISCORD_TOKEN, ENV_PREFIX
 client = discord.Client()
 
 
-class ServoSkullError(Exception):
-    pass
-
-
 def get_command_by_prefix(message_string):
     """Extract the command an its arguments from a string
     starting with a command prefix.
