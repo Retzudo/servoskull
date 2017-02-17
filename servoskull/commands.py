@@ -3,7 +3,6 @@ import logging
 import random
 
 import discord
-import requests
 from imperialdate import ImperialDate
 
 from servoskull.settings import CMD_PREFIX, USE_AVCONV
