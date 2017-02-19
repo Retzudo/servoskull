@@ -187,7 +187,8 @@ class CommandRoll(Command):
 
 
 class CommandSummon(SoundCommand):
-    help_text = "Summons the bot to the user's voice channel"
+    help_text = "Summons the bot to the user's voice channel or to the voice channel of the user you mention with `@`."
+    required_arguments = ['user']
 
     async def execute(self) -> str:
         """Have the bot connect to the voice channel of the message's user.
