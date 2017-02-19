@@ -210,12 +210,15 @@ class CommandSummon(SoundCommand):
             return 'You are not connected to any voice channel'
 
         voice_client = self._get_voice_client()
-        if not voice_client:
-            await self.client.join_voice_channel(voice_channel)
-        else:
-            await voice_client.move_to(voice_channel)
-
-        return 'Connected to "{}"'.format(voice_channel.name)
+        try:
+            if not voice_client:
+                await self.client.join_voice_channel(voice_channel)
+            else:
+                await voice_client.move_to(voice_channel)
+            return 'Connected to "{}"'.format(voice_channel.name)
+        except ConnectionResetError as e:
+            voice_client.disconnect()
+            return 'Could not connect to your voice channel: {}'.format(e)
 
 
 class CommandDisconnect(SoundCommand):
