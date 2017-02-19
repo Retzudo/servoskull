@@ -43,7 +43,7 @@ class SoundCommand(Command):
             return 'Due to some Discord API limitation you need to issue this command in a channel.'
 
         if not self._get_voice_client():
-            return 'I am not connected to any voice channel'
+            return 'I am not connected to any voice channel. Use `summon` to have me connect to one.'
         else:
             return await self.execute_sound()
 
