@@ -17,9 +17,17 @@ class Command:
 
     def __init__(self, **kwargs):
         self.arguments = kwargs.get('arguments')
+        self.message = kwargs.get('message')
 
     async def execute(self) -> str:
         raise NotImplementedError()
+
+    def _get_member_from_mention(self, mention):
+        """Return an instance of Member by a mention string that
+        starts with '<@!' and contains the user ID."""
+        user_id = mention[3:-1]
+        if self.message:
+            return self.message.server.get_member(user_id)
 
 
 class SoundCommand(Command):
@@ -27,7 +35,6 @@ class SoundCommand(Command):
     to be connected to a voice channel."""
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.message = kwargs.get('message')
         self.client = kwargs.get('client')
 
     async def execute_sound(self):
@@ -49,7 +56,7 @@ class SoundCommand(Command):
 
     def _get_voice_client(self):
         """Return the currently connected voice client of the message's server."""
-        return self.client.voice_client_in(self.message.server)
+        return self.message.server.voice_client
 
 
 class CommandHelp(Command):
@@ -187,12 +194,18 @@ class CommandSummon(SoundCommand):
 
         This class implements `execute` instead of `execute_sound` because the bot not being
         connected to a voice channel is a valid state for this command."""
-        if not isinstance(self.message.author, discord.Member):
+        connect_to_member = self.message.author
+
+        if len(self.arguments) > 0 and self.arguments[0]:
+            if self.arguments[0].startswith('<@!'):
+                connect_to_member = self._get_member_from_mention(self.arguments[0])
+
+        if not isinstance(connect_to_member, discord.Member):
             # We can't easily determine which voice channel a user is connected to
             # if they message the bot with direct messaging.
             return 'Due to some Discord API limitation you need to issue this command in a channel.'
 
-        voice_channel = self.message.author.voice.voice_channel
+        voice_channel = connect_to_member.voice.voice_channel
         if not voice_channel:
             return 'You are not connected to any voice channel'
 
