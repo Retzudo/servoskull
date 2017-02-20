@@ -109,7 +109,7 @@ class CommandGif(Command):
             if 'tags' in gif:
                 haystack = '{} {}'.format(haystack, ' '.join([tag.lower() for tag in gif['tags']]))
 
-            if all([arg.lower() in haystack for arg in self.arguments]):
+            if all(arg.lower() in haystack for arg in self.arguments):
                 return gif['url']
 
         return 'No gif found'
@@ -226,7 +226,8 @@ class CommandSummon(SoundCommand):
                 await voice_client.move_to(voice_channel)
             return 'Connected to "{}"'.format(voice_channel.name)
         except ConnectionResetError as e:
-            voice_client.disconnect()
+            if voice_client:
+                voice_client.disconnect()
             return 'Could not connect to your voice channel: {}'.format(e)
 
 
