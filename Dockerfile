@@ -1,5 +1,7 @@
 FROM python
 
+LABEL test="test"
+
 RUN apt-get update && apt-get install -y libffi-dev libav-tools
 
 COPY . /servoskull
