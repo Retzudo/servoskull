@@ -17,9 +17,17 @@ class Command:
 
     def __init__(self, **kwargs):
         self.arguments = kwargs.get('arguments')
+        self.message = kwargs.get('message')
 
     async def execute(self) -> str:
         raise NotImplementedError()
+
+    def _get_member_from_mention(self, mention):
+        """Return an instance of Member by a mention string that
+        starts with '<@!' and contains the user ID."""
+        user_id = mention[3:-1]
+        if self.message:
+            return self.message.server.get_member(user_id)
 
 
 class SoundCommand(Command):
@@ -27,7 +35,6 @@ class SoundCommand(Command):
     to be connected to a voice channel."""
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.message = kwargs.get('message')
         self.client = kwargs.get('client')
 
     async def execute_sound(self):
@@ -43,13 +50,13 @@ class SoundCommand(Command):
             return 'Due to some Discord API limitation you need to issue this command in a channel.'
 
         if not self._get_voice_client():
-            return 'I am not connected to any voice channel'
+            return 'I am not connected to any voice channel. Use `summon` to have me connect to one.'
         else:
             return await self.execute_sound()
 
     def _get_voice_client(self):
         """Return the currently connected voice client of the message's server."""
-        return self.client.voice_client_in(self.message.server)
+        return self.message.server.voice_client
 
 
 class CommandHelp(Command):
@@ -188,29 +195,39 @@ class CommandRoll(Command):
 
 
 class CommandSummon(SoundCommand):
-    help_text = "Summons the bot to the user's voice channel"
+    help_text = "Summons the bot to the user's voice channel or to the voice channel of the user you mention with `@`."
+    required_arguments = ['user']
 
     async def execute(self) -> str:
         """Have the bot connect to the voice channel of the message's user.
 
         This class implements `execute` instead of `execute_sound` because the bot not being
         connected to a voice channel is a valid state for this command."""
-        if not isinstance(self.message.author, discord.Member):
+        connect_to_member = self.message.author
+
+        if len(self.arguments) > 0 and self.arguments[0]:
+            if self.arguments[0].startswith('<@!'):
+                connect_to_member = self._get_member_from_mention(self.arguments[0])
+
+        if not isinstance(connect_to_member, discord.Member):
             # We can't easily determine which voice channel a user is connected to
             # if they message the bot with direct messaging.
             return 'Due to some Discord API limitation you need to issue this command in a channel.'
 
-        voice_channel = self.message.author.voice.voice_channel
+        voice_channel = connect_to_member.voice.voice_channel
         if not voice_channel:
             return 'You are not connected to any voice channel'
 
         voice_client = self._get_voice_client()
-        if not voice_client:
-            await self.client.join_voice_channel(voice_channel)
-        else:
-            await voice_client.move_to(voice_channel)
-
-        return 'Connected to "{}"'.format(voice_channel.name)
+        try:
+            if not voice_client:
+                await self.client.join_voice_channel(voice_channel)
+            else:
+                await voice_client.move_to(voice_channel)
+            return 'Connected to "{}"'.format(voice_channel.name)
+        except ConnectionResetError as e:
+            voice_client.disconnect()
+            return 'Could not connect to your voice channel: {}'.format(e)
 
 
 class CommandDisconnect(SoundCommand):
