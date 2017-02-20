@@ -1,6 +1,6 @@
 from datetime import datetime
 
-__version__ = 'v1.1.0'
+__version__ = 'v1.1.1'
 
 start_time = datetime.now()
 
