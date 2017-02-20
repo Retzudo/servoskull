@@ -1,4 +1,3 @@
-from datetime import datetime
 import os
 
 ENV_TOKEN = 'SERVOSKULL_TOKEN'

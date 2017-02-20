@@ -88,7 +88,7 @@ async def execute_command(command, arguments, discord_client, message):
         response = await command.execute()
 
     if response:
-        # Only response if there's actually a response.
+        # Only respond if there's actually a response.
         # Some commands don't need to respond with text.
         await discord_client.send_message(message.channel, response)
         logging.info(response)
@@ -103,6 +103,7 @@ if __name__ == '__main__':
                 'Discord API token not set with the {} environment variable'.format(ENV_PREFIX)
             )
 
+        logger.debug('Starting Discord client with token {}...', DISCORD_TOKEN[5:])
         client.run(DISCORD_TOKEN)
     except ServoSkullError as error:
         logger.error(error, exc_info=True)
