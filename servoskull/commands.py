@@ -105,7 +105,7 @@ class CommandGif(Command):
             if 'tags' in gif:
                 haystack = '{} {}'.format(haystack, ' '.join([tag.lower() for tag in gif['tags']]))
 
-            if all([arg.lower() in haystack for arg in self.arguments]):
+            if all(arg.lower() in haystack for arg in self.arguments):
                 return gif['url']
 
         return 'No gif found'
