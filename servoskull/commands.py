@@ -218,7 +218,8 @@ class CommandSummon(SoundCommand):
                 await voice_client.move_to(voice_channel)
             return 'Connected to "{}"'.format(voice_channel.name)
         except ConnectionResetError as e:
-            voice_client.disconnect()
+            if voice_client:
+                voice_client.disconnect()
             return 'Could not connect to your voice channel: {}'.format(e)
 
 
