@@ -108,3 +108,11 @@ async def test_cmd_sounds():
 
     assert response.startswith('Available sounds:')
     assert len(response.split('\n')) == len(commands.CommandSound.sounds) + 1
+
+
+@pytest.mark.asyncio
+async def test_cmd_xkcd():
+    command = commands.CommandXkcd(arguments=['standard'])
+    response = await command.execute()
+
+    assert response.startswith('https://explainxkcd.com/wiki/images/')

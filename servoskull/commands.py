@@ -253,6 +253,9 @@ class CommandSound(SoundCommand):
         """Play a sound."""
         voice_client = self._get_voice_client()
 
+        if not self.arguments or len(self.arguments) < 1:
+            return 'Use `sounds` for a list of sounds.'
+
         sound = self.arguments[0]
         url = CommandSound.sounds.get(sound)
         if not url:
@@ -272,6 +275,35 @@ class CommandSounds(Command):
             response += "\n  **{}**: {}".format(key, value)
 
         return response
+
+
+class CommandXkcd(Command):
+    help_text = 'Retrieves the most relevant xkcd comic for your query'
+    required_arguments = ['query']
+
+    async def execute(self) -> str:
+        """Search for an xkcd comic using https://relevantxkcd.appspot.com."""
+        if not self.arguments or len(self.arguments) < 1:
+            return 'Please add a search query to your command.'
+
+        query = ' '.join(self.arguments).lower()
+        url = 'https://relevantxkcd.appspot.com/process?action=xkcd&query={}'.format(query)
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                search_result = await response.text()
+
+        # The response is plain text.
+        # The first line is probably the response time.
+        # I don't know what the second line does (`0`)
+        # All other lines are links to comics and their number
+        comics = [line for line in search_result.split('\n') if line][2:]
+
+        if len(comics) == 1:
+            return 'No relevant comic found.'
+
+        return 'https://explainxkcd.com' + comics[0].split()[1]
+
 
 
 commands = {
