@@ -318,4 +318,5 @@ commands = {
     'disconnect': CommandDisconnect,
     'sounds': CommandSounds,
     'sound': CommandSound,
+    'xkcd': CommandXkcd,
 }
