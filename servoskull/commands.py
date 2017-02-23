@@ -244,7 +244,10 @@ class CommandSound(SoundCommand):
 
     # List of available sounds
     sounds = {
-        'horn': 'https://www.youtube.com/watch?v=1ytCEuuW2_A',
+        'horn': {
+            'url': 'https://www.youtube.com/watch?v=1ytCEuuW2_A',
+            'volume': 0.1,
+        },
     }
 
     async def execute_sound(self) -> str:
@@ -254,12 +257,16 @@ class CommandSound(SoundCommand):
         if not self.arguments or len(self.arguments) < 1:
             return 'Use `sounds` for a list of sounds.'
 
-        sound = self.arguments[0]
-        url = CommandSound.sounds.get(sound)
-        if not url:
+        sound_name = self.arguments[0]
+        sound = CommandSound.sounds.get(sound_name)
+        if not sound:
             return 'No such sound "{}". Use `sounds` for a list of sounds'.format(sound)
 
-        player = await voice_client.create_ytdl_player(url, use_avconv=USE_AVCONV)
+        player = await voice_client.create_ytdl_player(
+            sound.get('url'),
+            use_avconv=USE_AVCONV,
+            options='-af "volume={}"'.format(sound.get('volume', 1.0))
+        )
         player.start()
 
 
