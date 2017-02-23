@@ -22,13 +22,6 @@ class Command:
     async def execute(self) -> str:
         raise NotImplementedError()
 
-    def _get_member_from_mention(self, mention):
-        """Return an instance of Member by a mention string that
-        starts with '<@!' and contains the user ID."""
-        user_id = mention[3:-1]
-        if self.message:
-            return self.message.server.get_member(user_id)
-
 
 class SoundCommand(Command):
     """Base class for commands that require the bot
@@ -205,9 +198,9 @@ class CommandSummon(SoundCommand):
         connected to a voice channel is a valid state for this command."""
         connect_to_member = self.message.author
 
-        if len(self.arguments) > 0 and self.arguments[0]:
-            if self.arguments[0].startswith('<@!'):
-                connect_to_member = self._get_member_from_mention(self.arguments[0])
+        # If the message mentions exactly one user, connect to their channel instead
+        if len(self.message.mentions) == 1:
+            connect_to_member = self.message.mentions[0]
 
         if not isinstance(connect_to_member, discord.Member):
             # We can't easily determine which voice channel a user is connected to
