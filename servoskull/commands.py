@@ -299,11 +299,10 @@ class CommandXkcd(Command):
         # All other lines are links to comics and their number
         comics = [line for line in search_result.split('\n') if line][2:]
 
-        if len(comics) == 1:
+        if len(comics) < 1:
             return 'No relevant comic found.'
 
         return 'https://explainxkcd.com' + comics[0].split()[1]
-
 
 
 commands = {
