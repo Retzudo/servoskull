@@ -18,18 +18,19 @@ class Command:
     def __init__(self, **kwargs):
         self.arguments = kwargs.get('arguments')
         self.message = kwargs.get('message')
+        self.client = kwargs.get('client')
 
     async def execute(self) -> str:
         raise NotImplementedError()
+
+    def _get_mentions(self):
+        """Return Member/User objects for all mentioned users except the bot."""
+        return [member for member in self.message.mentions if member.id != self.client.user.id]
 
 
 class SoundCommand(Command):
     """Base class for commands that require the bot
     to be connected to a voice channel."""
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.client = kwargs.get('client')
-
     async def execute_sound(self):
         """Should be implemented by SoundCommand children instead of `execute`."""
         raise NotImplementedError()
@@ -37,11 +38,6 @@ class SoundCommand(Command):
     async def execute(self) -> str:
         """We override the `execute` method of `Command` and run a check before every execution
         if the bot is connected to a voice channel."""
-        if not isinstance(self.message.author, discord.Member):
-            # We can't easily determine which voice channel a user is connected to
-            # if they message the bot with direct messaging.
-            return 'Due to some Discord API limitation you need to issue this command in a channel.'
-
         if not self._get_voice_client():
             return 'I am not connected to any voice channel. Use `summon` to have me connect to one.'
         else:
@@ -199,12 +195,16 @@ class CommandSummon(SoundCommand):
         connect_to_member = self.message.author
 
         # If the message mentions exactly one user, connect to their channel instead
-        if len(self.message.mentions) == 1:
-            connect_to_member = self.message.mentions[0]
+        mentions = self._get_mentions()
+        if len(mentions) == 1:
+            connect_to_member = mentions[0]
 
         if not isinstance(connect_to_member, discord.Member):
-            # We can't easily determine which voice channel a user is connected to
-            # if they message the bot with direct messaging.
+            # 1. Users can be Members of multiple Discord servers.
+            # 2. This includes the bot
+            # 3. The bot and the requesting User can share many servers.
+            # Thus we cannot easily determine on which server the user is connected to a voice channel
+            # unless we implement such a search ourselves.
             return 'Due to some Discord API limitation you need to issue this command in a channel.'
 
         voice_channel = connect_to_member.voice.voice_channel
@@ -212,12 +212,17 @@ class CommandSummon(SoundCommand):
             return 'You are not connected to any voice channel'
 
         voice_client = self._get_voice_client()
+
+        # Sometimes the client can't connect to voice channels due to
+        # unknown network problems.
         try:
             if not voice_client:
                 await self.client.join_voice_channel(voice_channel)
             else:
                 await voice_client.move_to(voice_channel)
-            return 'Connected to "{}"'.format(voice_channel.name)
+            user_name = connect_to_member.nick or connect_to_member.name
+            return 'Connected to {}\'s voice channel "{}"'.format(connect_to_member.nick, voice_channel.name)
+
         except ConnectionResetError as e:
             if voice_client:
                 voice_client.disconnect()

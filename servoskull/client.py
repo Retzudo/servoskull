@@ -103,7 +103,7 @@ if __name__ == '__main__':
                 'Discord API token not set with the {} environment variable'.format(ENV_PREFIX)
             )
 
-        logger.debug('Starting Discord client with token {}...', DISCORD_TOKEN[5:])
+        logger.debug('Starting Discord client with token {}...'.format(DISCORD_TOKEN[:5]))
         client.run(DISCORD_TOKEN)
     except ServoSkullError as error:
         logger.error(error, exc_info=True)
