@@ -6,6 +6,7 @@ import discord
 from servoskull import ServoSkullError
 from servoskull.commands import commands
 from servoskull.logging import logger
+from servoskull.passivecommands import passive_commands
 from servoskull.settings import CMD_PREFIX, DISCORD_TOKEN, ENV_PREFIX
 
 client = discord.Client()
@@ -61,6 +62,8 @@ async def on_message(message):
     command = None
     arguments = None
 
+    execute_passive_commands(message)
+
     logger.debug('Read message: "{}"'.format(message.content))
     if message.content.startswith(CMD_PREFIX):
         command, arguments = get_command_by_prefix(message.content)
@@ -70,10 +73,10 @@ async def on_message(message):
         logger.debug('Read command by mention - command: "{}"; arguments: {}'.format(command, arguments))
 
     if command:
-        await execute_command(command, arguments, client, message)
+        await execute_command(command, arguments, message)
 
 
-async def execute_command(command, arguments, discord_client, message):
+async def execute_command(command, arguments, message):
     if command not in commands:
         logger.debug('User {} issued non-existing command "{}"'.format(message.author, command))
         response = 'No such command "{}".'.format(command, get_closest_command(command))
@@ -90,8 +93,20 @@ async def execute_command(command, arguments, discord_client, message):
     if response:
         # Only respond if there's actually a response.
         # Some commands don't need to respond with text.
-        await discord_client.send_message(message.channel, response)
+        await client.send_message(message.channel, response)
         logging.info(response)
+
+
+async def execute_passive_commands(message):
+    for command_class in passive_commands:
+        command = command_class(message=message)
+        response = None
+
+        if command.is_triggered():
+            response = await command.execute()
+
+        if response:
+            client.send_message(message.channel, response)
 
 
 if __name__ == '__main__':
