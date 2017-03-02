@@ -4,7 +4,7 @@ class PassiveCommand:
     """Base class for passive commands
 
     A passive command is a command that is not actively triggered by a user but
-    is reacting to a message that contain's a special keyword.
+    reacts to a message that contains a special keyword.
     """
     def __init__(self, message):
         self.message = message
