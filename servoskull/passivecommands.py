@@ -1,4 +1,6 @@
+import aiohttp
 import re
+
 
 class PassiveCommand:
     """Base class for passive commands
@@ -22,7 +24,7 @@ class RedditCommentCommand(PassiveCommand):
     text and some info about the Reddit post."""
     def __init__(self, message):
         super().__init__(message)
-        self.regex = re.compile('https?://(www\.)?reddit.com/r/\w+/comments')
+        self.regex = re.compile('https?://(www\.)?reddit.com/r/\w+/comments/[\w\d]+/[\w\d_]+/[\w\d]+')
 
     def is_triggered(self) -> bool:
         return self.regex.search(self.message.content) is not None
@@ -30,10 +32,30 @@ class RedditCommentCommand(PassiveCommand):
     def _get_url(self):
         for word in self.message.content.split():
             if self.regex.match(word):
-                return word
+                return word.rstrip('/') + '.json'
+
+    @staticmethod
+    def _compile_message(json):
+        try:
+            # Some digging around and hoping the json
+            # structure is what we expect
+            post = json[0]['data']['children'][0]['data']
+            comment = json[1]['data']['children'][0]['data']
+        except (IndexError, KeyError):
+            return None
+        else:
+            return """↑*{post[ups]}* **{post[title]}**:
+
+            */u/{comment[author]} said (↑{comment[ups]}):*
+            {comment[body]}""".format(post=post, comment=comment)
 
     async def execute(self) -> str:
-        return self._get_url()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(self._get_url()) as response:
+                json = await response.json()
+
+        if json:
+            return self._compile_message(json)
 
 
 passive_commands = [
