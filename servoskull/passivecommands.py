@@ -58,9 +58,8 @@ class RedditCommentCommand(PassiveCommand):
             async with session.get(self._get_url()) as response:
                 json = await response.json()
 
-        logger.info('Size of response JSON: {}'.format(len(json)))
-
         if json:
+            logger.info('Size of response JSON: {}'.format(len(json)))
             return self._compile_message(json)
 
 
