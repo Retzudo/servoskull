@@ -62,7 +62,7 @@ async def on_message(message):
     command = None
     arguments = None
 
-    execute_passive_commands(message)
+    await execute_passive_commands(message)
 
     logger.debug('Read message: "{}"'.format(message.content))
     if message.content.startswith(CMD_PREFIX):
@@ -103,10 +103,12 @@ async def execute_passive_commands(message):
         response = None
 
         if command.is_triggered():
+            logging.info('Message triggered passive command {}'.format(command_class))
             response = await command.execute()
 
         if response:
-            client.send_message(message.channel, response)
+            await client.send_message(message.channel, response)
+            logging.info(response)
 
 
 if __name__ == '__main__':

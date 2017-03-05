@@ -1,6 +1,8 @@
 import aiohttp
 import re
 
+from servoskull.logging import logger
+
 
 class PassiveCommand:
     """Base class for passive commands
@@ -41,23 +43,27 @@ class RedditCommentCommand(PassiveCommand):
             # structure is what we expect
             post = json[0]['data']['children'][0]['data']
             comment = json[1]['data']['children'][0]['data']
-        except (IndexError, KeyError):
+        except (IndexError, KeyError) as e:
+            logger.warning('Could not compile message because {}'.format(e))
             return None
         else:
             return """↑*{post[ups]}* **{post[title]}**:
 
-            */u/{comment[author]} said (↑{comment[ups]}):*
-            {comment[body]}""".format(post=post, comment=comment)
+*/u/{comment[author]} said (↑{comment[ups]}):*
+{comment[body]}""".format(post=post, comment=comment)
 
     async def execute(self) -> str:
+        logger.info('Fetching Reddit data')
         async with aiohttp.ClientSession() as session:
             async with session.get(self._get_url()) as response:
                 json = await response.json()
+
+        logger.info('Size of response JSON: {}'.format(len(json)))
 
         if json:
             return self._compile_message(json)
 
 
 passive_commands = [
-    PassiveCommand
+    RedditCommentCommand
 ]
