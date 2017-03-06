@@ -123,7 +123,7 @@ class CommandIdentify(Command):
 
         now = datetime.now()
         uptime_delta = relativedelta(now, servoskull.start_time)
-        uptime = '{0.hours} hours {0.minutes} minutes {0.seconds} seconds'.format(uptime_delta)
+        uptime = '{0.days} days, {0.hours} hours, {0.minutes} minutes, {0.seconds} seconds'.format(uptime_delta)
         flavour_text = (
             "A Servo-skull is a drone-like robotic device that appears to be a human skull outfitted with electronic "
             "or cybernetic components that utilise embedded anti-gravity field generators to allow them to hover "
