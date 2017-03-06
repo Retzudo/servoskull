@@ -44,12 +44,12 @@ If you want to change the default command prefix `!` to something else, add anot
 
 ### Regular command
 
-A regular command is a command that does *something* and optionally returns a string. Create a new class in `commands.py`, inherit from `Command` and override the `execute` method where you can do anything. If you want the bot respond with a message, just return a string.
+A regular command is a command that does *something* and optionally returns a string. Create a new class in `commands.py`, inherit from `Command` and override the `execute` method where you can do anything. If you want the bot respond with a message, just return a string. Finally add your new class to the dictionary at the bottom of the file.
 
 ### Sound command
 
-A sound command is a command that requires the bot to be connected to a voice channel before running the command. E. g. a command that plays a sound. Create a class in `commands.py`, inherit from `SoundCommand` and override the `execute_sound` method (*not* the `execute` method). 
+A sound command is a command that requires the bot to be connected to a voice channel before running the command. E. g. a command that plays a sound. Create a new class in `commands.py`, inherit from `SoundCommand` and override the `execute_sound` method (*not* the `execute` method). Finally add your new class to the dictionary at the bottom of the file.
 
 ### Passive command
 
-A passive command is a command that can be triggered by any message the bot can listen to. Extend the class `PassiveCommand` and override `is_triggered` as well as `execute`. If somebody writes a message in Discord, the bot listens to it and uses the `is_triggered` method to check if it should call the class's `execute` method.
+A passive command is a command that can be triggered by any message the bot can listen to. Create a new class in `passivecommands.py`, inherit from `PassiveCommand` and override `is_triggered` as well as `execute`. If somebody writes a message in Discord, the bot listens to it and uses the `is_triggered` method to check if it should call the class's `execute` method. Finally add your new class to the list at the bottom of the file.
