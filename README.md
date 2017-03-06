@@ -8,8 +8,9 @@ A custom Discord bot for my server.
 
 ## What does it do?
 
-Respond to commands either by prefix or when mentioned like a regular user. Can also play some
-sounds in voice channels.
+1. Respond to commands either by prefix or when mentioned like a regular user.
+2. Play sounds in voice channels.
+3. Passively respond to messages that contain certain keywords
 
 ## What does it *not* do?
 
@@ -48,3 +49,7 @@ A regular command is a command that does *something* and optionally returns a st
 ### Sound command
 
 A sound command is a command that requires the bot to be connected to a voice channel before running the command. E. g. a command that plays a sound. Create a class in `commands.py`, inherit from `SoundCommand` and override the `execute_sound` method (*not* the `execute` method). 
+
+### Passive command
+
+A passive command is a command that can be triggered by any message the bot can listen to. Extend the class `PassiveCommand` and override `is_triggered` as well as `execute`. If somebody writes a message in Discord, the bot listens to it and uses the `is_triggered` method to check if it should call the class's `execute` method.
