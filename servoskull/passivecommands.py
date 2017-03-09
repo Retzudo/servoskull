@@ -47,10 +47,7 @@ class RedditCommentCommand(PassiveCommand):
             logger.warning('Could not compile message because {}'.format(e))
             return None
         else:
-            return """↑*{post[ups]}* **{post[title]}**:
-
-*/u/{comment[author]} said (↑{comment[ups]}):*
-{comment[body]}""".format(post=post, comment=comment)
+            return '/u/{comment[author]} said (↑{comment[ups]}):\n{comment[body]}'.format(post=post, comment=comment)
 
     async def execute(self) -> str:
         logger.info('Fetching Reddit data')
