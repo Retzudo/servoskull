@@ -1,4 +1,4 @@
-"""Regular commands that need to know about all other commands."""
+"""Regular commands that are actively triggered by a user and need to know about all other commands."""
 from servoskull.commands import Command
 from servoskull.commands import commands as regular_commands
 from servoskull.settings import CMD_PREFIX
