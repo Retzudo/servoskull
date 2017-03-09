@@ -4,12 +4,17 @@ from difflib import get_close_matches
 import discord
 
 from servoskull import ServoSkullError
-from servoskull.commands import commands
+from servoskull.commands import commands as regular_commands
 from servoskull.logging import logger
-from servoskull.passivecommands import passive_commands
+from servoskull.metacommands import commands as meta_commands
+from servoskull.passivecommands import commands as passive_commands
 from servoskull.settings import CMD_PREFIX, DISCORD_TOKEN, ENV_PREFIX
+from servoskull.soundcommands import commands as sound_commands
 
 client = discord.Client()
+
+# Merge the available command dictionaries
+commands = {**meta_commands, **regular_commands, **sound_commands}
 
 
 def get_command_by_prefix(message_string):
@@ -59,6 +64,10 @@ async def on_ready():
 @client.event
 async def on_message(message):
     """Listen for messages."""
+    if message.author.id == client.user.id:
+        # Make it so that the bot can't trigger itself
+        return
+
     command = None
     arguments = None
 
@@ -83,6 +92,7 @@ async def execute_command(command, arguments, message):
         closest_command = get_closest_command(command)
         if closest_command:
             response += ' Did you mean {}?'.format(closest_command)
+        response += '\nTry `!help` for a list of commands'
         logger.info(response)
     else:
         class_ = commands[command]
@@ -98,7 +108,7 @@ async def execute_command(command, arguments, message):
 
 
 async def execute_passive_commands(message):
-    for command_class in passive_commands:
+    for command_class in passive_commands.values():
         command = command_class(message=message)
         response = None
 

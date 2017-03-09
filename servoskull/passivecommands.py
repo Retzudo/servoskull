@@ -1,3 +1,5 @@
+"""Commands that are triggered passively by messages in text channels that fulfill certain trigger conditions
+(e. g. containing some special text or a link)."""
 import aiohttp
 import re
 
@@ -24,6 +26,8 @@ class PassiveCommand:
 class RedditCommentCommand(PassiveCommand):
     """If a user posts a link to a Reddit comment, respond with the comment
     text and some info about the Reddit post."""
+    help_text = 'Triggers when somebody posts a link to a Reddit comment'
+
     def __init__(self, message):
         super().__init__(message)
         self.regex = re.compile('https?://(www\.)?reddit.com/r/\w+/comments/[\w\d]+/[\w\d_]+/[\w\d]+')
@@ -60,6 +64,6 @@ class RedditCommentCommand(PassiveCommand):
             return self._compile_message(json)
 
 
-passive_commands = [
-    RedditCommentCommand
-]
+commands = {
+    'Reddit comment': RedditCommentCommand
+}

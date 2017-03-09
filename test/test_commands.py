@@ -4,15 +4,6 @@ from servoskull import commands
 
 
 @pytest.mark.asyncio
-async def test_cmd_help():
-    command = commands.CommandHelp()
-    response = await command.execute()
-
-    assert response.startswith('Available commands:')
-    assert len(response.split('\n')) == len(commands.commands.keys()) + 2
-
-
-@pytest.mark.asyncio
 async def test_cmd_yesno():
     command = commands.CommandYesNo()
     response = await command.execute()
@@ -99,15 +90,6 @@ async def test_cmd_roll():
     command = commands.CommandRoll(arguments=['100'])
     response = await command.execute()
     assert response.startswith('Rolled a 100-sided die:')
-
-
-@pytest.mark.asyncio
-async def test_cmd_sounds():
-    command = commands.CommandSounds()
-    response = await command.execute()
-
-    assert response.startswith('Available sounds:')
-    assert len(response.split('\n')) == len(commands.CommandSound.sounds) + 1
 
 
 @pytest.mark.asyncio
