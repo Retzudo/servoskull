@@ -1,7 +1,6 @@
 """Commands that are triggered passively by messages in text channels that fulfill certain trigger conditions
 (e. g. containing some special text or a link)."""
 import aiohttp
-import re
 
 from servoskull.logging import logger
 
@@ -29,6 +28,8 @@ class RedditCommentCommand(PassiveCommand):
     help_text = 'Triggers when somebody posts a link to a Reddit comment'
 
     def __init__(self, message):
+        import re
+
         super().__init__(message)
         self.regex = re.compile('https?://(www\.)?reddit.com/r/\w+/comments/[\w\d]+/[\w\d_]+/[\w\d]+')
 
@@ -45,13 +46,12 @@ class RedditCommentCommand(PassiveCommand):
         try:
             # Some digging around and hoping the json
             # structure is what we expect
-            post = json[0]['data']['children'][0]['data']
             comment = json[1]['data']['children'][0]['data']
         except (IndexError, KeyError) as e:
             logger.warning('Could not compile message because {}'.format(e))
             return None
         else:
-            return '/u/{comment[author]} said (↑{comment[ups]}):\n{comment[body]}'.format(post=post, comment=comment)
+            return '/u/{comment[author]} said (↑{comment[ups]}):\n{comment[body]}'.format(comment=comment)
 
     async def execute(self) -> str:
         logger.info('Fetching Reddit data')
