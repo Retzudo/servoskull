@@ -1,9 +1,9 @@
 """Regular commands that are actively triggered by a user and need to know about all other commands."""
-from servoskull.commands import Command
-from servoskull.commands import commands as regular_commands
+from servoskull.commands.regular import commands as regular_commands
+from servoskull.commands.passive import commands as passive_commands
+from servoskull.commands.regular import Command
+from servoskull.commands.sound import commands as sound_commands
 from servoskull.settings import CMD_PREFIX
-from servoskull.soundcommands import commands as sound_commands
-from servoskull.passivecommands import commands as passive_commands
 
 
 class CommandHelp(Command):

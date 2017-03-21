@@ -1,6 +1,6 @@
 import pytest
 
-from servoskull import passivecommands
+from servoskull.commands import passive
 
 
 class DottedDict(dict):
@@ -10,25 +10,25 @@ class DottedDict(dict):
 
 @pytest.mark.asyncio
 async def test_reddit_comment_command():
-    command = passivecommands.RedditCommentCommand(message=DottedDict(
+    command = passive.RedditCommentCommand(message=DottedDict(
         content='test'
     ))
     assert command.is_triggered() is False
 
     # Link to a self post
-    command = passivecommands.RedditCommentCommand(message=DottedDict(
+    command = passive.RedditCommentCommand(message=DottedDict(
         content='https://www.reddit.com/r/IAmA/comments/z1c9z/i_am_barack_obama_president_of_the_united_states/'
     ))
     assert command.is_triggered() is False
 
     # Perma-link to a comment in a post
-    command = passivecommands.RedditCommentCommand(message=DottedDict(
+    command = passive.RedditCommentCommand(message=DottedDict(
         content='https://www.reddit.com/r/IAmA/comments/z1c9z/i_am_barack_obama_president_of_the_united_states/c60o0iw/'
     ))
     assert command.is_triggered() is True
 
     url = 'https://www.reddit.com/r/IAmA/comments/z1c9z/i_am_barack_obama_president_of_the_united_states/c60o0iw'
-    command = passivecommands.RedditCommentCommand(message=DottedDict(content='asdf bla {} yada yada'.format(url)))
+    command = passive.RedditCommentCommand(message=DottedDict(content='asdf bla {} yada yada'.format(url)))
     assert command._get_url() == url + '.json'
 
     message = command._compile_message({})

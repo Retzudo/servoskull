@@ -1,6 +1,6 @@
 import pytest
 
-from servoskull import commands
+import servoskull.commands.regular as commands
 
 
 @pytest.mark.asyncio

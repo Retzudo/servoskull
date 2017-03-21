@@ -5,13 +5,13 @@ just quickly testing it on a real server yourself.
 """
 import pytest
 
-from servoskull import soundcommands
+from servoskull.commands import sound
 
 
 @pytest.mark.asyncio
 async def test_cmd_sounds():
-    command = soundcommands.CommandSounds()
+    command = sound.CommandSounds()
     response = await command.execute()
 
     assert response.startswith('Available sounds:')
-    assert len(response.split('\n')) == len(soundcommands.CommandSound.sounds) + 1
+    assert len(response.split('\n')) == len(sound.CommandSound.sounds) + 1

@@ -4,8 +4,6 @@ import random
 import aiohttp
 from imperialdate import ImperialDate
 
-from servoskull.settings import CMD_PREFIX
-
 
 class Command:
     """Base class for all commands."""

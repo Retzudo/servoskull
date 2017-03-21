@@ -4,17 +4,17 @@ from difflib import get_close_matches
 import discord
 
 from servoskull import ServoSkullError
-from servoskull.commands import commands as regular_commands
+from servoskull.commands import meta
+from servoskull.commands import regular
+from servoskull.commands import passive
+from servoskull.commands import sound
 from servoskull.logging import logger
-from servoskull.metacommands import commands as meta_commands
-from servoskull.passivecommands import commands as passive_commands
 from servoskull.settings import CMD_PREFIX, DISCORD_TOKEN, ENV_PREFIX
-from servoskull.soundcommands import commands as sound_commands
 
 client = discord.Client()
 
 # Merge the available command dictionaries
-commands = {**meta_commands, **regular_commands, **sound_commands}
+commands = {**meta.commands, **regular.commands, **sound.commands}
 
 
 def get_command_by_prefix(message_string):
@@ -108,7 +108,7 @@ async def execute_command(command, arguments, message):
 
 
 async def execute_passive_commands(message):
-    for command_class in passive_commands.values():
+    for command_class in passive.commands.values():
         command = command_class(message=message)
         response = None
 

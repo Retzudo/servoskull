@@ -1,7 +1,7 @@
 """Commands that are actively triggered by a user and require the bot to be connected to a voice channel."""
 import discord
 
-from servoskull.commands import Command
+from servoskull.commands.regular import Command
 from servoskull.settings import USE_AVCONV
 
 
@@ -63,7 +63,7 @@ class CommandSummon(SoundCommand):
             else:
                 await voice_client.move_to(voice_channel)
             user_name = connect_to_member.nick or connect_to_member.name
-            return 'Connected to {}\'s voice channel "{}"'.format(connect_to_member.nick, voice_channel.name)
+            return 'Connected to {}\'s voice channel "{}"'.format(user_name, voice_channel.name)
 
         except ConnectionResetError as e:
             if voice_client:
