@@ -4,6 +4,8 @@ import random
 import aiohttp
 from imperialdate import ImperialDate
 
+from servoskull.logging import logger
+
 
 class Command:
     """Base class for all commands."""
@@ -146,11 +148,14 @@ class CommandXkcd(Command):
 
     async def execute(self) -> str:
         """Search for an xkcd comic using https://relevantxkcd.appspot.com."""
+        from urllib.parse import urlencode
+
         if not self.arguments or len(self.arguments) < 1:
             return 'Please add a search query to your command.'
 
-        query = ' '.join(self.arguments).lower()
+        query = urlencode(' '.join(self.arguments).lower())
         url = 'https://relevantxkcd.appspot.com/process?action=xkcd&query={}'.format(query)
+        logger.info('Fetching URL {}'.format(url))
 
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
