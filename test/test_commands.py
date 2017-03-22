@@ -98,3 +98,8 @@ async def test_cmd_xkcd():
     response = await command.execute()
 
     assert response.startswith('https://explainxkcd.com/wiki/images/')
+
+    command = commands.CommandXkcd(arguments=['meaning', 'of', 'life'])
+    response = await command.execute()
+
+    assert response.startswith('https://explainxkcd.com/wiki/images/')

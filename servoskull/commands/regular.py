@@ -170,7 +170,10 @@ class CommandXkcd(Command):
         if len(comics) < 1:
             return 'No relevant comic found.'
 
-        return 'https://explainxkcd.com' + comics[0].split()[1]
+        url = 'https://explainxkcd.com' + comics[0].split()[1]
+
+        logger.info('Returning xkcd {}'.format(url))
+        return url
 
 
 commands = {
