@@ -153,8 +153,8 @@ class CommandXkcd(Command):
         if not self.arguments or len(self.arguments) < 1:
             return 'Please add a search query to your command.'
 
-        query = urlencode(' '.join(self.arguments).lower())
-        url = 'https://relevantxkcd.appspot.com/process?action=xkcd&query={}'.format(query)
+        query = urlencode({'query': ' '.join(self.arguments).lower()})
+        url = 'https://relevantxkcd.appspot.com/process?action=xkcd&{}'.format(query)
         logger.info('Fetching URL {}'.format(url))
 
         async with aiohttp.ClientSession() as session:
