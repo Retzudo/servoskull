@@ -1,11 +1,7 @@
 import pytest
 
 from servoskull.commands import passive
-
-
-class DottedDict(dict):
-    def __getattr__(self, item):
-        return self.get(item)
+from test.util import DottedDict
 
 
 @pytest.mark.asyncio

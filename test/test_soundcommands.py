@@ -1,7 +1,8 @@
 """Due to the nature of sound commands, we can't easily test them.
 
-We would have to do *a lot* of mocking which is probably more work than
-just quickly testing it on a real server yourself.
+We would have to do *a lot* of mocking which is probably more work and
+probably more error-prone than just quickly testing it on a real server
+ourselves.
 """
 import pytest
 
