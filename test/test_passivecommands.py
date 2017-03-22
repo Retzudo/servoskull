@@ -1,7 +1,7 @@
 import pytest
 
 from servoskull.commands import passive
-from test.util import DottedDict
+from util import DottedDict
 
 
 @pytest.mark.asyncio
