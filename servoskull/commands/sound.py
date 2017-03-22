@@ -119,7 +119,7 @@ class CommandSounds(Command):
         """Respond with a list of available sounds for the `sound` command."""
         response = "Available sounds:"
         for key, value in CommandSound.sounds.items():
-            response += "\n  **{}**: {}".format(key, value)
+            response += "\n  **{}**: {}".format(key, value['url'])
 
         return response
 
