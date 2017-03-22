@@ -9,7 +9,7 @@ from servoskull.commands import regular
 from servoskull.commands import passive
 from servoskull.commands import sound
 from servoskull.logging import logger
-from servoskull.settings import CMD_PREFIX, DISCORD_TOKEN, ENV_PREFIX
+from servoskull.settings import CMD_PREFIX, DISCORD_TOKEN, ENV_PREFIX, AUTOGIF
 
 client = discord.Client()
 
@@ -93,6 +93,11 @@ async def execute_command(command, arguments, message):
         if closest_command:
             response += ' Did you mean {}?'.format(closest_command)
         response += '\nTry `!help` for a list of commands'
+        if AUTOGIF:
+            # If AUTOGIF is enable with an env var, also respond with a GIF that matches
+            # the command + arguments
+            gif = await regular.CommandGif(arguments=[command]+arguments).execute()
+            response += "\nAnyway, here's a GIF that matches your request:\n{}".format(gif)
         logger.info(response)
     else:
         class_ = commands[command]
