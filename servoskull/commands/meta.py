@@ -32,7 +32,7 @@ class CommandHelp(Command):
         for text, class_ in passive_commands.items():
             response += '\n  **{}** - {}'.format(text, class_.help_text)
 
-        response += '\nEither prepend your command with `{}` or mention the bot using `@`.'.format(CMD_PREFIX)
+        response += '\n\nEither prepend your command with `{}` or mention the bot using `@`.'.format(CMD_PREFIX)
 
         return response
 
