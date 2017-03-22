@@ -30,7 +30,7 @@ class CommandHelp(Command):
         response += ('\n\nAvailable passive commands '
                      '(these trigger automatically if a message fulfills certain conditions):')
         for text, class_ in passive_commands.items():
-            response += '\n  **{}{}** - {}'.format(CMD_PREFIX, text, class_.help_text)
+            response += '\n  **{}** - {}'.format(text, class_.help_text)
 
         response += '\nEither prepend your command with `{}` or mention the bot using `@`.'.format(CMD_PREFIX)
 
