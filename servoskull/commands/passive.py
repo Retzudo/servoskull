@@ -2,7 +2,7 @@
 (e. g. containing some special text or a link)."""
 import aiohttp
 
-from servoskull.logging import logger
+from servoskull.skulllogging import logger
 
 
 class PassiveCommand:

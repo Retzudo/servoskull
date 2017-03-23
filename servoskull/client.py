@@ -1,4 +1,3 @@
-import logging
 from difflib import get_close_matches
 
 import discord
@@ -8,7 +7,7 @@ from servoskull.commands import meta
 from servoskull.commands import regular
 from servoskull.commands import passive
 from servoskull.commands import sound
-from servoskull.logging import logger
+from servoskull.skulllogging import logger
 from servoskull.settings import CMD_PREFIX, DISCORD_TOKEN, ENV_PREFIX, AUTOGIF
 
 client = discord.Client()
@@ -58,7 +57,7 @@ def get_closest_command(command):
 
 @client.event
 async def on_ready():
-    logging.info('Logged in as {} ({})'.format(client.user.name, client.user.id))
+    logger.info('Logged in as {} ({})'.format(client.user.name, client.user.id))
 
 
 @client.event
@@ -96,8 +95,9 @@ async def execute_command(command, arguments, message):
         if AUTOGIF:
             # If AUTOGIF is enable with an env var, also respond with a GIF that matches
             # the command + arguments
-            gif = await regular.CommandGif(arguments=[command]+arguments).execute()
-            response += "\nAnyway, here's a GIF that matches your request:\n{}".format(gif)
+            gif = await regular.CommandGif(arguments=[command] + arguments).execute()
+            if 'no gif found' not in gif.lower():
+                response += "\nAnyway, here's a GIF that matches your request:\n{}".format(gif)
         logger.info(response)
     else:
         class_ = commands[command]
@@ -109,7 +109,7 @@ async def execute_command(command, arguments, message):
         # Only respond if there's actually a response.
         # Some commands don't need to respond with text.
         await client.send_message(message.channel, response)
-        logging.info(response)
+        logger.info(response)
 
 
 async def execute_passive_commands(message):
@@ -118,12 +118,12 @@ async def execute_passive_commands(message):
         response = None
 
         if command.is_triggered():
-            logging.info('Message triggered passive command {}'.format(command_class))
+            logger.info('Message triggered passive command {}'.format(command_class))
             response = await command.execute()
 
         if response:
             await client.send_message(message.channel, response)
-            logging.info(response)
+            logger.info(response)
 
 
 if __name__ == '__main__':

@@ -4,7 +4,7 @@ import random
 import aiohttp
 from imperialdate import ImperialDate
 
-from servoskull.logging import logger
+from servoskull.skulllogging import logger
 
 
 class Command:
