@@ -97,9 +97,9 @@ async def test_cmd_xkcd():
     command = commands.CommandXkcd(arguments=['standard'])
     response = await command.execute()
 
-    assert response.startswith('https://explainxkcd.com/wiki/images/')
+    assert response.startswith('https://imgs.xkcd.com/comics/')
 
     command = commands.CommandXkcd(arguments=['meaning', 'of', 'life'])
     response = await command.execute()
 
-    assert response.startswith('https://explainxkcd.com/wiki/images/')
+    assert response.startswith('https://imgs.xkcd.com/comics/')

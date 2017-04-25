@@ -147,30 +147,25 @@ class CommandXkcd(Command):
     required_arguments = ['query']
 
     async def execute(self) -> str:
-        """Search for an xkcd comic using https://relevantxkcd.appspot.com."""
-        from urllib.parse import urlencode
-
+        """Search for an xkcd comic using https://relevant-xkcd.github.io"""
         if not self.arguments or len(self.arguments) < 1:
             return 'Please add a search query to your command.'
 
-        query = urlencode({'query': ' '.join(self.arguments).lower()})
-        url = 'https://relevantxkcd.appspot.com/process?action=xkcd&{}'.format(query)
-        logger.info('Fetching URL {}'.format(url))
+        url = 'https://relevant-xkcd-backend.herokuapp.com/search'
+        data = {
+            'search': ' '.join(self.arguments).lower()
+        }
+        logger.info('Posting to URL {}: {}'.format(url, data))
 
         async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                search_result = await response.text()
+            async with session.post(url, data=data) as response:
+                data = await response.json()
 
-        # The response is plain text.
-        # The first line is probably the response time.
-        # I don't know what the second line does (`0`)
-        # All other lines are links to comics and their number
-        comics = [line for line in search_result.split('\n') if line][2:]
-
-        if len(comics) < 1:
+        try:
+            url = data['results'][0]['image']
+        except (KeyError, TypeError) as e:
+            logger.error(e, exc_info=True)
             return 'No relevant comic found.'
-
-        url = 'https://explainxkcd.com' + comics[0].split()[1]
 
         logger.info('Returning xkcd {}'.format(url))
         return url
@@ -179,7 +174,7 @@ class CommandXkcd(Command):
 commands = {
     'yesno': CommandYesNo,
     'gif': CommandGif,
-    'date':  CommandDate,
+    'date': CommandDate,
     'identify': CommandIdentify,
     'holiday': CommandNextHoliday,
     'roll': CommandRoll,
