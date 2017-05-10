@@ -108,7 +108,10 @@ async def execute_command(command, arguments, message):
     if response:
         # Only respond if there's actually a response.
         # Some commands don't need to respond with text.
-        await client.send_message(message.channel, response)
+        if isinstance(response, str):
+            await client.send_message(message.channel, content=response)
+        if isinstance(response, discord.Embed):
+            await client.send_message(message.channel, embed=response)
         logger.info(response)
 
 

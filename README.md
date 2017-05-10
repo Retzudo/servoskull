@@ -42,6 +42,8 @@ If you want to change the default command prefix `!` to something else, add anot
 
 ## Extending the command list
 
+All commands must either return `None`, a `str` or an `discord.Embed` object.
+
 ### Regular command
 
 A regular command is a command that does *something* and optionally returns a string. Create a new class in `regular.py`, inherit from `Command` and override the `execute` method where you can do anything. If you want the bot respond with a message, just return a string. Finally add your new class to the dictionary at the bottom of the file.

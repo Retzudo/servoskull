@@ -1,3 +1,4 @@
+import discord
 import pytest
 
 import servoskull.commands.regular as commands
@@ -19,7 +20,8 @@ async def test_cmd_gif():
 
     command = commands.CommandGif(arguments=['worf'])
     response = await command.execute()
-    assert response.startswith('https://')
+    assert isinstance(response, discord.Embed)
+    assert response.image.url.startswith('https://')
 
 
 @pytest.mark.asyncio
@@ -36,8 +38,8 @@ async def test_cmd_identify():
     command = commands.CommandIdentify()
     response = await command.execute()
 
-    assert len(response) > 100
-    assert response.startswith('Servo-skull active.')
+    assert isinstance(response, discord.Embed)
+    assert response.title.startswith('Servo-skull active.')
 
 
 @pytest.mark.asyncio
@@ -46,7 +48,7 @@ async def test_cmd_next_holiday():
     command = commands.CommandNextHoliday()
     response = await command.execute()
 
-    assert re.match('^The next holiday is "\w+" .* \(\d{4}-\d{2}-\d{2}\)$', response)
+    assert re.match('^The next holiday is "[\w ]+" .* \(\d{4}-\d{2}-\d{2}\)$', response) is not None
 
 
 @pytest.mark.asyncio
@@ -97,9 +99,9 @@ async def test_cmd_xkcd():
     command = commands.CommandXkcd(arguments=['standard'])
     response = await command.execute()
 
-    assert response.startswith('https://imgs.xkcd.com/comics/')
+    assert response.startswith('https://xkcd.com/')
 
     command = commands.CommandXkcd(arguments=['meaning', 'of', 'life'])
     response = await command.execute()
 
-    assert response.startswith('https://imgs.xkcd.com/comics/')
+    assert response.startswith('https://xkcd.com/')

@@ -2,6 +2,7 @@
 import random
 
 import aiohttp
+from discord import Embed
 from imperialdate import ImperialDate
 
 from servoskull.skulllogging import logger
@@ -17,7 +18,7 @@ class Command:
         self.message = kwargs.get('message')
         self.client = kwargs.get('client')
 
-    async def execute(self) -> str:
+    async def execute(self):
         raise NotImplementedError()
 
     def _get_mentions(self):
@@ -39,7 +40,7 @@ class CommandGif(Command):
 
     GIFS_URL = 'https://gifs.retzudo.com/gifs.json'
 
-    async def execute(self) -> str:
+    async def execute(self):
         """Respond with a gif that matches a title or a tag of a gif
         at https://gifs.retzudo.com."""
         if not self.arguments or len(self.arguments) < 1:
@@ -58,7 +59,9 @@ class CommandGif(Command):
                 haystack = '{} {}'.format(haystack, ' '.join([tag.lower() for tag in gif['tags']]))
 
             if all(arg.lower() in haystack for arg in self.arguments):
-                return gif['url']
+                response = Embed()
+                response.set_image(url=gif['url'])
+                return response
 
         return 'No gif found'
 
@@ -74,7 +77,7 @@ class CommandDate(Command):
 class CommandIdentify(Command):
     help_text = 'Identifies the servo-skull'
 
-    async def execute(self) -> str:
+    async def execute(self) -> Embed:
         """Respond with some info and a little RP text."""
         from datetime import datetime
         from dateutil.relativedelta import relativedelta
@@ -88,23 +91,19 @@ class CommandIdentify(Command):
             "or cybernetic components that utilise embedded anti-gravity field generators to allow them to hover "
             "and drift bodiless through the air. They are fashioned from the skulls of loyal Adepts of the Adeptus "
             "Terra and other pious Imperial servants to which robotic components and an antigravitic impeller have "
-            "been added.This is so that they may continue their work for the Emperor of Mankind even after death. To "
-            "have one's; skull chosen to serve as a; Servo-skull is a great honour in the Imperium, for it implies "
-            "one\'s service in life has been satisfactory enough to warrant continuation beyond death."
+            "been added. This is so that they may continue their work for the Emperor of Mankind even after death. To "
+            "have one's skull chosen to serve as a Servo-skull is a great honour in the Imperium, for it implies "
+            "one's service in life has been satisfactory enough to warrant continuation beyond death."
         )
 
-        return (
-            'Servo-skull active. Vox module operational.\n'
-            'Version: **{}**\n'
-            'Uptime: **{}**\n'
-            '\n'
-            '*{}*'
-            .format(
-                servoskull.__version__,
-                uptime,
-                flavour_text
-            )
-        )
+        response = Embed()
+        response.set_thumbnail(url='http://vignette3.wikia.nocookie.net/warhammer40k/images/c/c3/Servo-Skull-Front2.jpg/revision/latest?cb=20120711230906')
+        response.title = 'Servo-skull active. Vox module operational.'
+        response.add_field(name='Version', value=servoskull.__version__)
+        response.add_field(name='Uptime', value=uptime)
+        response.set_footer(text=flavour_text)
+
+        return response
 
 
 class CommandNextHoliday(Command):
@@ -162,12 +161,14 @@ class CommandXkcd(Command):
                 data = await response.json()
 
         try:
-            url = data['results'][0]['image']
+            url = data['results'][0]['url']
         except (KeyError, TypeError) as e:
             logger.error(e, exc_info=True)
             return 'No relevant comic found.'
 
         logger.info('Returning xkcd {}'.format(url))
+        if not url.startswith('https://') or not url.startswith('http://'):
+            url = 'https://' + url
         return url
 
 
