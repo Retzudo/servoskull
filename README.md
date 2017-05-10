@@ -32,8 +32,8 @@ to be present in `$PATH`.
 ### Docker
 
 1. Build the Docker image: `docker build -t servoskull .`
-2. Run a Docker container: `docker run --name servoskull --restart=always -e SERVOSKULL_TOKEN=<YOUR_TOKEN> servoskull`
-3. Open `https://discordapp.com/api/oauth2/authorize?scope=bot&permissions=0&client_id=<YOUR_CLIENT_ID>`.
+2. Run a Docker container: `docker run --name servoskull --restart=always -e SERVOSKULL_TOKEN=<YOUR_DISCORD_TOKEN> servoskull`
+3. Open `https://discordapp.com/api/oauth2/authorize?scope=bot&permissions=0&client_id=<YOUR_DISCORD_CLIENT_ID>`.
    You can get your client ID from your Discord dev dashboard.
 
 If you want to change the default command prefix `!` to something else, add another parameters
@@ -42,7 +42,7 @@ If you want to change the default command prefix `!` to something else, add anot
 
 ## Extending the command list
 
-All commands must either return `None`, a `str` or an `discord.Embed` object.
+All commands must either return `None`, a `str` or a `discord.Embed` object.
 
 ### Regular command
 
