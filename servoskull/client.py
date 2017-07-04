@@ -67,6 +67,10 @@ async def on_message(message):
         # Make it so that the bot can't trigger itself
         return
 
+    if message.mention_everyone:
+        # Don't trigger on @here etc.
+        return
+
     command = None
     arguments = None
 
