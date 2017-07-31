@@ -3,17 +3,11 @@ from difflib import get_close_matches
 import discord
 
 from servoskull import ServoSkullError
-from servoskull.commands import meta
-from servoskull.commands import regular
-from servoskull.commands import passive
-from servoskull.commands import sound
-from servoskull.skulllogging import logger
 from servoskull.settings import CMD_PREFIX, DISCORD_TOKEN, ENV_PREFIX, AUTOGIF
+from servoskull.skulllogging import logger
+from servoskull.commands import registry
 
 client = discord.Client()
-
-# Merge the available command dictionaries
-commands = {**meta.commands, **regular.commands, **sound.commands}
 
 
 def get_command_by_prefix(message_string):
@@ -46,7 +40,7 @@ def get_command_by_mention(message_string):
 
 def get_closest_command(command):
     """Given a string, return the command that's most similar to it."""
-    available_commands = commands.keys()
+    available_commands = registry.commands.keys()
 
     closest_commands = get_close_matches(command.lower(), available_commands, 1)
     if len(closest_commands) >= 1:
@@ -89,7 +83,7 @@ async def on_message(message):
 
 
 async def execute_command(command, arguments, message):
-    if command not in commands:
+    if command not in registry.commands:
         logger.debug('User {} issued non-existing command "{}"'.format(message.author, command))
         response = 'No such command "{}".'.format(command, get_closest_command(command))
         closest_command = get_closest_command(command)
@@ -104,7 +98,7 @@ async def execute_command(command, arguments, message):
                 response += "\nAnyway, here's a GIF that matches your request:\n{}".format(gif)
         logger.info(response)
     else:
-        class_ = commands[command]
+        class_ = registry.commands[command]
         logger.debug('Executing command "{}"'.format(command))
         command = class_(arguments=arguments, message=message, client=client)
         response = await command.execute()
@@ -120,7 +114,7 @@ async def execute_command(command, arguments, message):
 
 
 async def execute_passive_commands(message):
-    for command_class in passive.commands.values():
+    for command_class in registry.passive_commands.commands.values():
         command = command_class(message=message)
         response = None
 

@@ -1,6 +1,7 @@
 """Commands that are actively triggered by a user and require the bot to be connected to a voice channel."""
 import discord
 
+from servoskull.commands import registry
 from servoskull.commands.regular import Command
 from servoskull.settings import USE_AVCONV
 
@@ -25,6 +26,7 @@ class SoundCommand(Command):
         return self.message.server.voice_client
 
 
+@registry.register('summon')
 class CommandSummon(SoundCommand):
     help_text = "Summons the bot to the user's voice channel or to the voice channel of the user you mention with `@`."
     required_arguments = ['user']
@@ -71,6 +73,7 @@ class CommandSummon(SoundCommand):
             return 'Could not connect to your voice channel: {}'.format(e)
 
 
+@registry.register('disconnect')
 class CommandDisconnect(SoundCommand):
     help_text = 'Disconnects the bot from the current voice channel'
 
@@ -80,6 +83,7 @@ class CommandDisconnect(SoundCommand):
         await voice_client.disconnect()
 
 
+@registry.register('sound')
 class CommandSound(SoundCommand):
     help_text = 'Play a sound (`sounds` for a list)'
     required_arguments = ['sound']
@@ -112,6 +116,7 @@ class CommandSound(SoundCommand):
         player.start()
 
 
+@registry.register('sounds')
 class CommandSounds(Command):
     help_text = 'Respond with a list of available sounds for voice channels'
 
@@ -122,11 +127,3 @@ class CommandSounds(Command):
             response += "\n  **{}**: {}".format(key, value['url'])
 
         return response
-
-
-commands = {
-    'summon': CommandSummon,
-    'disconnect': CommandDisconnect,
-    'sounds': CommandSounds,
-    'sound': CommandSound,
-}

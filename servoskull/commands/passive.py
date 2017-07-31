@@ -2,6 +2,7 @@
 (e. g. containing some special text or a link)."""
 import aiohttp
 
+from servoskull.commands import registry
 from servoskull.skulllogging import logger
 
 
@@ -22,6 +23,7 @@ class PassiveCommand:
         raise NotImplementedError()
 
 
+@registry.register('Reddit comment')
 class RedditCommentCommand(PassiveCommand):
     """If a user posts a link to a Reddit comment, respond with the comment
     text and some info about the Reddit post."""
@@ -62,8 +64,3 @@ class RedditCommentCommand(PassiveCommand):
         if json:
             logger.info('Size of response JSON: {}'.format(len(json)))
             return self._compile_message(json)
-
-
-commands = {
-    'Reddit comment': RedditCommentCommand
-}

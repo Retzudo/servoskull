@@ -6,6 +6,7 @@ from discord import Embed
 from imperialdate import ImperialDate
 
 from servoskull.skulllogging import logger
+from servoskull.commands import registry
 
 
 class Command:
@@ -26,6 +27,7 @@ class Command:
         return [member for member in self.message.mentions if member.id != self.client.user.id]
 
 
+@registry.register('yesno')
 class CommandYesNo(Command):
     help_text = 'Respond with yes or no'
 
@@ -34,6 +36,7 @@ class CommandYesNo(Command):
         return random.choice(['yes', 'no'])
 
 
+@registry.register('gif')
 class CommandGif(Command):
     required_arguments = ['name or tag']
     help_text = 'Respond with a gif from https://gifs.retzudo.com'
@@ -66,6 +69,7 @@ class CommandGif(Command):
         return 'No gif found'
 
 
+@registry.register('date')
 class CommandDate(Command):
     help_text = 'Respond with the current Imperial Date'
 
@@ -74,6 +78,7 @@ class CommandDate(Command):
         return "By the Emperor's grace it is {}".format(ImperialDate())
 
 
+@registry.register('identify')
 class CommandIdentify(Command):
     help_text = 'Identifies the servo-skull'
 
@@ -106,6 +111,7 @@ class CommandIdentify(Command):
         return response
 
 
+@registry.register('holiday')
 class CommandNextHoliday(Command):
     help_text = 'Respond with with when the next holiday is'
 
@@ -123,6 +129,7 @@ class CommandNextHoliday(Command):
         )
 
 
+@registry.register('roll')
 class CommandRoll(Command):
     help_text = 'Roll an n-sided die'
     required_arguments = ['n']
@@ -141,6 +148,7 @@ class CommandRoll(Command):
         return 'Rolled a {}-sided die: {}'.format(sides, random.randint(1, sides))
 
 
+@registry.register('xkcd')
 class CommandXkcd(Command):
     help_text = 'Retrieves the most relevant xkcd comic for your query'
     required_arguments = ['query']
@@ -170,14 +178,3 @@ class CommandXkcd(Command):
         if not url.startswith('https://') or not url.startswith('http://'):
             url = 'https://' + url
         return url
-
-
-commands = {
-    'yesno': CommandYesNo,
-    'gif': CommandGif,
-    'date': CommandDate,
-    'identify': CommandIdentify,
-    'holiday': CommandNextHoliday,
-    'roll': CommandRoll,
-    'xkcd': CommandXkcd,
-}
