@@ -1,5 +1,6 @@
 """Commands that are actively triggered by a user and require the bot to be connected to a voice channel."""
 import discord
+import youtube_dl
 
 from servoskull.commands import registry
 from servoskull.commands.regular import Command
@@ -26,7 +27,7 @@ class SoundCommand(Command):
         return self.message.server.voice_client
 
 
-@registry.register('summon')
+@registry.register('summon', sound=True)
 class CommandSummon(SoundCommand):
     help_text = "Summons the bot to the user's voice channel or to the voice channel of the user you mention with `@`."
     required_arguments = ['user']
@@ -73,7 +74,7 @@ class CommandSummon(SoundCommand):
             return 'Could not connect to your voice channel: {}'.format(e)
 
 
-@registry.register('disconnect')
+@registry.register('disconnect', sound=True)
 class CommandDisconnect(SoundCommand):
     help_text = 'Disconnects the bot from the current voice channel'
 
@@ -83,7 +84,7 @@ class CommandDisconnect(SoundCommand):
         await voice_client.disconnect()
 
 
-@registry.register('sound')
+@registry.register('sound', sound=True)
 class CommandSound(SoundCommand):
     help_text = 'Play a sound (`sounds` for a list)'
     required_arguments = ['sound']
@@ -91,7 +92,7 @@ class CommandSound(SoundCommand):
     # List of available sounds
     sounds = {
         'horn': {
-            'url': 'https://www.youtube.com/watch?v=1ytCEuuW2_A',
+            'url': 'https://www.youtube.com/watch?v=9Jz1TjCphXE',
             'volume': 0.1,
         },
     }
@@ -106,17 +107,20 @@ class CommandSound(SoundCommand):
         sound_name = self.arguments[0]
         sound = CommandSound.sounds.get(sound_name)
         if not sound:
-            return 'No such sound "{}". Use `sounds` for a list of sounds'.format(sound)
+            return 'No such sound "{}". Use `sounds` for a list of sounds'.format(sound_name)
 
-        player = await voice_client.create_ytdl_player(
-            sound.get('url'),
-            use_avconv=USE_AVCONV,
-            options='-af "volume={}"'.format(sound.get('volume', 1.0))
-        )
-        player.start()
+        try:
+            player = await voice_client.create_ytdl_player(
+                sound.get('url'),
+                use_avconv=USE_AVCONV,
+                options='-af "volume={}"'.format(sound.get('volume', 1.0))
+            )
+            player.start()
+        except youtube_dl.utils.DownloadError as e:
+            return str(e)
 
 
-@registry.register('sounds')
+@registry.register('sounds', sound=True)
 class CommandSounds(Command):
     help_text = 'Respond with a list of available sounds for voice channels'
 

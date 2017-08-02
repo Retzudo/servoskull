@@ -40,7 +40,7 @@ def get_command_by_mention(message_string):
 
 def get_closest_command(command):
     """Given a string, return the command that's most similar to it."""
-    available_commands = registry.commands.keys()
+    available_commands = {**registry.get_regular_commands(), **registry.get_sound_commands()}
 
     closest_commands = get_close_matches(command.lower(), available_commands, 1)
     if len(closest_commands) >= 1:
@@ -83,7 +83,8 @@ async def on_message(message):
 
 
 async def execute_command(command, arguments, message):
-    if command not in registry.commands:
+    commands = {**registry.get_regular_commands(), **registry.get_sound_commands()}
+    if command not in commands:
         logger.debug('User {} issued non-existing command "{}"'.format(message.author, command))
         response = 'No such command "{}".'.format(command, get_closest_command(command))
         closest_command = get_closest_command(command)
@@ -93,12 +94,12 @@ async def execute_command(command, arguments, message):
         if AUTOGIF:
             # If AUTOGIF is enable with an env var, also respond with a GIF that matches
             # the command + arguments
-            gif = await regular.CommandGif(arguments=[command] + arguments).execute()
+            gif = await registry.commands['gif']['class'](arguments=[command] + arguments).execute()
             if 'no gif found' not in gif.lower():
                 response += "\nAnyway, here's a GIF that matches your request:\n{}".format(gif)
         logger.info(response)
     else:
-        class_ = registry.commands[command]
+        class_ = registry.commands[command]['class']
         logger.debug('Executing command "{}"'.format(command))
         command = class_(arguments=arguments, message=message, client=client)
         response = await command.execute()
@@ -114,8 +115,8 @@ async def execute_command(command, arguments, message):
 
 
 async def execute_passive_commands(message):
-    for command_class in registry.passive_commands.commands.values():
-        command = command_class(message=message)
+    for command_class in registry.get_passive_commands().values():
+        command = command_class['class'](message=message)
         response = None
 
         if command.is_triggered():

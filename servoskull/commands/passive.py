@@ -23,7 +23,7 @@ class PassiveCommand:
         raise NotImplementedError()
 
 
-@registry.register('Reddit comment')
+@registry.register('Reddit comment', passive=True)
 class RedditCommentCommand(PassiveCommand):
     """If a user posts a link to a Reddit comment, respond with the comment
     text and some info about the Reddit post."""

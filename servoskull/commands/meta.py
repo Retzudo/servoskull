@@ -10,26 +10,32 @@ class CommandHelp(Command):
 
     async def execute(self) -> str:
         """Respond with a help message containing all available commands."""
+        regular_commands = registry.get_regular_commands()
+        sound_commands = registry.get_sound_commands()
+        passive_commands = registry.get_passive_commands()
+
         response = 'Available commands:'
-        for command, class_ in registry.commands.items():
+        for command, dct in regular_commands.items():
+            class_ = dct.get('class')
             arguments = ''
             for argument in class_.required_arguments:
                 arguments += '**<{}>** '.format(argument)
 
             response += '\n  **{}{}** {}- {}'.format(CMD_PREFIX, command, arguments, class_.help_text)
 
-        # TODO
-        # response += '\n\nAvailable sound commands:'
-        # for command, class_ in sound_commands.items():
-        #     arguments = ''
-        #     for argument in class_.required_arguments:
-        #         arguments += '**<{}>** '.format(argument)
-        #
-        #     response += '\n  **{}{}** {}- {}'.format(CMD_PREFIX, command, arguments, class_.help_text)
+        response += '\n\nAvailable sound commands:'
+        for command, dct in sound_commands.items():
+            class_ = dct.get('class')
+            arguments = ''
+            for argument in class_.required_arguments:
+                arguments += '**<{}>** '.format(argument)
+
+            response += '\n  **{}{}** {}- {}'.format(CMD_PREFIX, command, arguments, class_.help_text)
 
         response += ('\n\nAvailable passive commands '
                      '(these trigger automatically if a message fulfills certain conditions):')
-        for text, class_ in registry.passive_commands.items():
+        for text, dct in passive_commands.items():
+            class_ = dct.get('class')
             response += '\n  **{}** - {}'.format(text, class_.help_text)
 
         response += '\n\nEither prepend your command with `{}` or mention the bot using `@`.'.format(CMD_PREFIX)
