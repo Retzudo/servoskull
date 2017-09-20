@@ -50,7 +50,7 @@ A regular command is a command that does *something* and optionally returns a st
 
 ### Sound command
 
-A sound command is a command that requires the bot to be connected to a voice channel before running the command. E. g. a command that plays a sound. Create a new class in `regular.py`, inherit from `SoundCommand` and override the `execute_sound` method (*not* the `execute` method). Finally register your class with the annotation `@registry.register('yourcommand', sound=True)`.
+A sound command is a command that requires the bot to be connected to a voice channel before running the command. E. g. a command that plays a sound. Create a new class in `sound.py`, inherit from `SoundCommand` and override the `execute_sound` method (*not* the `execute` method). Finally register your class with the annotation `@registry.register('yourcommand', sound=True)`.
 
 ### Passive command
 
