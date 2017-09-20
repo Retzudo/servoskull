@@ -46,12 +46,12 @@ All commands must either return `None`, a `str` or a `discord.Embed` object.
 
 ### Regular command
 
-A regular command is a command that does *something* and optionally returns a string. Create a new class in `regular.py`, inherit from `Command` and override the `execute` method where you can do anything. If you want the bot respond with a message, just return a string. Finally add your new class to the dictionary at the bottom of the file.
+A regular command is a command that does *something* and optionally returns a string. Create a new class in `regular.py`, inherit from `Command` and override the `execute` method where you can do anything. If you want the bot to respond with a message, just return a string. Finally register your class with the annotation `@registry.register('yourcommand')` with `yourcommand` being the string that triggers the command.
 
 ### Sound command
 
-A sound command is a command that requires the bot to be connected to a voice channel before running the command. E. g. a command that plays a sound. Create a new class in `regular.py`, inherit from `SoundCommand` and override the `execute_sound` method (*not* the `execute` method). Finally add your new class to the dictionary at the bottom of the file.
+A sound command is a command that requires the bot to be connected to a voice channel before running the command. E. g. a command that plays a sound. Create a new class in `regular.py`, inherit from `SoundCommand` and override the `execute_sound` method (*not* the `execute` method). Finally register your class with the annotation `@registry.register('yourcommand', sound=True)`.
 
 ### Passive command
 
-A passive command is a command that can be triggered by any message the bot can listen to. Create a new class in `passive.py`, inherit from `PassiveCommand` and override `is_triggered` as well as `execute`. If somebody writes a message in Discord, the bot listens to it and uses the `is_triggered` method to check if it should call the class's `execute` method. Finally add your new class to the list at the bottom of the file.
+A passive command is a command that can be triggered by any message the bot can listen to. Create a new class in `passive.py`, inherit from `PassiveCommand` and override `is_triggered` as well as `execute`. If somebody writes a message in Discord, the bot listens to it and uses the `is_triggered` method to check if it should call the class's `execute` method. Finally register your class with the annotation `@registry.register('Your command', passive=True)` with `'Your command'` being a short description for the `!help` command.
