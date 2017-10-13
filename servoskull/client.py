@@ -31,7 +31,7 @@ def get_command_by_mention(message_string):
     word the begins with `@` (mentions).
     The arguments are a list of words followed by the command.
     """
-    words = [word for word in message_string.split() if not word.startswith('<@!')]
+    words = [word for word in message_string.split() if client.user.id not in word]
     command = words[0]
     arguments = words[1:]
 
