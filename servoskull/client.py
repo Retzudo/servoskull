@@ -23,7 +23,7 @@ def get_command_by_prefix(message_string):
     return command, arguments
 
 
-def get_command_by_mention(message_string):
+def get_command_by_mention(message_string, client_id):
     """Extract the command and its arguments from a string
     where the bot was mentioned in.
 
@@ -31,7 +31,7 @@ def get_command_by_mention(message_string):
     word the begins with `@` (mentions).
     The arguments are a list of words followed by the command.
     """
-    words = [word for word in message_string.split() if client.user.id not in word]
+    words = [word for word in message_string.split() if client_id not in word]
     command = words[0]
     arguments = words[1:]
 
@@ -75,7 +75,7 @@ async def on_message(message):
         command, arguments = get_command_by_prefix(message.content)
         logger.debug('Read command by prefix - command: "{}"; arguments: {}'.format(command, arguments))
     elif client.user.mentioned_in(message):
-        command, arguments = get_command_by_mention(message.content)
+        command, arguments = get_command_by_mention(message.content, client.user.id)
         logger.debug('Read command by mention - command: "{}"; arguments: {}'.format(command, arguments))
 
     if command:
